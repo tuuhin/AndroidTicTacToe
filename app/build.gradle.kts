@@ -11,7 +11,6 @@ android {
     defaultConfig {
         applicationId = "com.eva.androidtictactoe"
         minSdk = 28
-        //noinspection EditedTargetSdkVersion
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -63,7 +62,8 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.compose.windowsize)
     implementation(libs.kotlinx.serialization.json)
-
+    //datastore
+    implementation(libs.datastore.preferences)
     // lifecycle runtime compose
     implementation(libs.lifecycle.runtime.compose)
     //ktor client
@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.client.serialization)
     implementation(libs.ktor.client.websockets)
     implementation(libs.ktor.client.logging)
     //koin

@@ -1,5 +1,6 @@
 [versions]
 android_gradle_plugin = "8.1.1"
+datastore-preferences = "1.0.0"
 kotlin = "1.8.22"
 
 # AndroidX
@@ -34,7 +35,8 @@ kotlinx-serialization-json = "1.5.1"
 androidx_corektx = { module = "androidx.core:core-ktx", version.ref = "android_core_ktx" }
 androidx_lifecycle_runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
-
+#datastore preferences
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
 #Viewmodel compose
 lifecycle_runtime_compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-runtime-ktx" }
 #Compose
@@ -58,7 +60,6 @@ espresso_core = { module = "androidx.test.espresso:espresso-core", version.ref =
 
 #kotlix serilaization
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
-
 #Koin
 koin_core = { module = "io.insert-koin:koin-core", version.ref = "koin_core" }
 koin_android = { module = "io.insert-koin:koin-android", version.ref = "koin_android" }
@@ -68,10 +69,11 @@ koin_compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = 
 ktor_client_core = { module = "io.ktor:ktor-client-core", version.ref = "ktor-client" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor-client" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor-client" }
+ktor_client_serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor_client" }
 ktor_client_cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor-client" }
 ktor_client_logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor-client" }
 ktor_client_websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor-client" }
 
 [bundles]
-compose = ["compose.ui", "compose.toolingpreview", "compose.ui.graphics", "compose.material3","compose.ui.tooling"]
+compose = ["compose.ui", "compose.toolingpreview", "compose.ui.graphics", "compose.material3", "compose.ui.tooling"]
 composetest = ["compose.test.junit4", "compose.test.manifest"]
