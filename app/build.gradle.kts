@@ -62,6 +62,8 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.compose.windowsize)
     implementation(libs.kotlinx.serialization.json)
+    //navigation
+    implementation(libs.navigation.compose)
     //datastore
     implementation(libs.datastore.preferences)
     // lifecycle runtime compose

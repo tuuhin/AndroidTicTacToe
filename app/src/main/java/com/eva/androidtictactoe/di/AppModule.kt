@@ -7,7 +7,8 @@ import com.eva.androidtictactoe.data.remote.PlayerRoomApiImpl
 import com.eva.androidtictactoe.data.repository.PlayerRoomRepoImpl
 import com.eva.androidtictactoe.domain.repository.PlayerRoomApiFacade
 import com.eva.androidtictactoe.domain.repository.PlayerRoomRepository
-import com.eva.androidtictactoe.presentation.screens.PlayerRoomViewModel
+import com.eva.androidtictactoe.presentation.screens.feature_game.GameScreenViewModel
+import com.eva.androidtictactoe.presentation.screens.feature_room.PlayerRoomViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -25,4 +26,6 @@ val appModule = module {
     factoryOf(::PlayerRoomRepoImpl) bind PlayerRoomRepository::class
 
     viewModelOf(::PlayerRoomViewModel)
+
+    viewModelOf(::GameScreenViewModel)
 }

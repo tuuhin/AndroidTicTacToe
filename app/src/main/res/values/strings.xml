@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AndroidTicTacToe</string>
+    <string name="game_name">Online Tic Tac Toe</string>
+    <string name="game_extra_text">Join the game directly or create a room and share the room id to play with a partner</string>
 </resources>
