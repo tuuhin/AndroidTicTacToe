@@ -1,7 +1,20 @@
 package com.eva.androidtictactoe.presentation.navigation
 
 sealed class Screens(val route: String) {
-    object BoardingScreen : Screens(route = "/boarding")
 
-    object GameScreen : Screens(route = "/game/{${ScreenParameters.ROOM_CODE_PARAMS}}")
+	object RoomRoute : Screens(route = "/room")
+	object BoardingRoute : Screens(route = "/boarding")
+	object CreateRoomRoute : Screens(route = "/create")
+
+	object JoinRoomRoute : Screens(route = "/join")
+
+	object GameScreen : Screens(
+		route = buildString {
+			append("/game?")
+			append(ScreenParameters.ROOM_CODE_PARAMS)
+			append("=")
+			append("{${ScreenParameters.ROOM_CODE_PARAMS}}")
+		}
+	)
+
 }

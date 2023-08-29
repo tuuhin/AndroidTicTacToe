@@ -2,4 +2,12 @@
     <string name="app_name">AndroidTicTacToe</string>
     <string name="game_name">Online Tic Tac Toe</string>
     <string name="game_extra_text">Join the game directly or create a room and share the room id to play with a partner</string>
+    <string name="room_placeholder">9xcd45....</string>
+    <string name="join_room_info_text">The room is join-able if the code is correct and the number of joiners are less than two</string>
+    <string name="create_room_subtitle">Create a Room and share the code for others to join</string>
+    <string name="create_room_extra">The number of boards indicate the number of match that can be played</string>
+    <string name="create_room_route_title">Create Room</string>
+    <string name="join_room_route_title">Join Room</string>
+    <string name="join_room_subtitle">Verify the received room code.</string>
+    <string name="no_username_dialog_text">Username not found. A username is required for playing the game,a username differenciate you from other users.</string>
 </resources>
