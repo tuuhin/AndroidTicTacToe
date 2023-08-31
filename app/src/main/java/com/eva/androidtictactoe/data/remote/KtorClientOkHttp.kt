@@ -1,5 +1,6 @@
 package com.eva.androidtictactoe.data.remote
 
+import com.eva.androidtictactoe.BuildConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
@@ -15,8 +16,6 @@ import java.time.Duration
 
 object KtorClientOkHttp {
 
-    private const val BASE_URL = "http://localhost:8080"
-
     fun getInstance(): HttpClient = HttpClient(OkHttp) {
         engine {
             config {
@@ -25,7 +24,7 @@ object KtorClientOkHttp {
             }
         }
         defaultRequest {
-            url(BASE_URL)
+            url(BuildConfig.BASE_URI)
         }
 
         install(ContentNegotiation) {
@@ -40,5 +39,4 @@ object KtorClientOkHttp {
             level = LogLevel.ALL
         }
     }
-
 }

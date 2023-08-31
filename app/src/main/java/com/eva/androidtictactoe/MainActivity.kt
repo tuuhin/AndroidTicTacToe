@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.eva.androidtictactoe.presentation.navigation.AppNavigationGraph
 import com.eva.androidtictactoe.presentation.utils.LocalSnackBarHostState
@@ -23,7 +24,7 @@ class MainActivity : ComponentActivity() {
 					modifier = Modifier.fillMaxSize(),
 					color = MaterialTheme.colorScheme.background
 				) {
-					val snackBarHostState = SnackbarHostState()
+					val snackBarHostState = remember { SnackbarHostState() }
 
 					CompositionLocalProvider(
 						LocalSnackBarHostState provides snackBarHostState

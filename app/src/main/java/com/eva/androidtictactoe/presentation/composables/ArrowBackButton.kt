@@ -13,7 +13,8 @@ import androidx.navigation.NavController
 @Composable
 fun ArrowBackButton(
 	navController: NavController,
-	modifier: Modifier = Modifier, colors: IconButtonColors = IconButtonDefaults.iconButtonColors()
+	modifier: Modifier = Modifier,
+	colors: IconButtonColors = IconButtonDefaults.iconButtonColors()
 ) {
 	if (navController.previousBackStackEntry != null)
 		IconButton(

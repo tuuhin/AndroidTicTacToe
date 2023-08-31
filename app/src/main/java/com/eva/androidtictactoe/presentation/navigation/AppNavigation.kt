@@ -3,10 +3,6 @@ package com.eva.androidtictactoe.presentation.navigation
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -17,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.eva.androidtictactoe.domain.model.BoardSymbols
+import com.eva.androidtictactoe.presentation.composables.ArrowBackButton
 import com.eva.androidtictactoe.presentation.screens.feature_game.GameScreen
 import com.eva.androidtictactoe.presentation.screens.feature_game.GameScreenViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -32,7 +29,31 @@ fun AppNavigationGraph(
 		startDestination = Screens.RoomRoute.route,
 		modifier = modifier
 	) {
-		roomNavigation(navController)
+		roomNavigation(
+			navController = navController,
+			onJoinRedirect = {
+				navController.navigate(Screens.JoinRoomRoute.route) {
+					launchSingleTop = true
+					navController.previousBackStackEntry?.destination?.route
+						?.let { route ->
+							if (route == Screens.JoinRoomRoute.route) {
+								popUpTo(route)
+							}
+						}
+				}
+			},
+			onCreateRedirect = {
+				navController.navigate(Screens.CreateRoomRoute.route) {
+					navController.previousBackStackEntry?.destination?.route
+						?.let { route ->
+							if (route == Screens.CreateRoomRoute.route) {
+								popUpTo(route)
+							}
+						}
+					launchSingleTop = true
+				}
+			},
+		)
 		composable(
 			route = Screens.GameScreen.route,
 			arguments = listOf(
@@ -52,15 +73,12 @@ fun AppNavigationGraph(
 
 			val boardState by viewModel.boardState.collectAsStateWithLifecycle()
 
-
 			GameScreen(
-				navigation = {
-					IconButton(onClick = {}) {
-						Icon(
-							imageVector = Icons.Default.ArrowBack, contentDescription = "Back arrow"
-						)
-					}
-				}, playerSymbols = BoardSymbols.XSymbol
+				roomId = roomId,
+				navigation = { ArrowBackButton(navController = navController) },
+				playerSymbols = BoardSymbols.XSymbol,
+				board = boardState,
+				onBoardPositionSelect = {}
 			)
 		}
 	}
