@@ -1,5 +1,6 @@
 package com.eva.androidtictactoe.presentation.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
@@ -34,36 +35,42 @@ fun AppNavigationGraph(
 			onJoinRedirect = {
 				navController.navigate(Screens.JoinRoomRoute.route) {
 					launchSingleTop = true
-					navController.previousBackStackEntry?.destination?.route
-						?.let { route ->
-							if (route == Screens.JoinRoomRoute.route) {
-								popUpTo(route)
-							}
+					navController.previousBackStackEntry?.destination?.route?.let { route ->
+						if (route == Screens.JoinRoomRoute.route) {
+							popUpTo(route)
 						}
+					}
 				}
 			},
 			onCreateRedirect = {
 				navController.navigate(Screens.CreateRoomRoute.route) {
-					navController.previousBackStackEntry?.destination?.route
-						?.let { route ->
-							if (route == Screens.CreateRoomRoute.route) {
-								popUpTo(route)
-							}
-						}
 					launchSingleTop = true
+					navController.previousBackStackEntry?.destination?.route?.let { route ->
+						if (route == Screens.CreateRoomRoute.route) {
+							popUpTo(route)
+						}
+					}
 				}
 			},
+			onGameScreen = { roomId ->
+				roomId?.let {
+					val destination = Screens.GameScreenWithRoomId(roomId = roomId).route
+					navController.navigate(destination)
+				}
+			}
 		)
 		composable(
-			route = Screens.GameScreen.route,
+			route = Screens.GameScreenWithParam.route,
 			arguments = listOf(
 				navArgument(ScreenParameters.ROOM_CODE_PARAMS) {
 					type = NavType.StringType
 					nullable = true
 				},
-			), enterTransition = {
+			),
+			enterTransition = {
 				slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up) + expandIn()
-			}, exitTransition = {
+			},
+			exitTransition = {
 				slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down) + shrinkOut()
 			}
 		) { entry ->
@@ -72,6 +79,13 @@ fun AppNavigationGraph(
 			val viewModel = koinViewModel<GameScreenViewModel>()
 
 			val boardState by viewModel.boardState.collectAsStateWithLifecycle()
+
+			val backEnable by viewModel.allowBack.collectAsStateWithLifecycle()
+
+			BackHandler(
+				enabled = backEnable,
+				onBack = {}
+			)
 
 			GameScreen(
 				roomId = roomId,

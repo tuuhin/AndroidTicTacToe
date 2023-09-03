@@ -8,7 +8,7 @@ sealed class Screens(val route: String) {
 
 	object JoinRoomRoute : Screens(route = "/join")
 
-	object GameScreen : Screens(
+	object GameScreenWithParam : Screens(
 		route = buildString {
 			append("/game?")
 			append(ScreenParameters.ROOM_CODE_PARAMS)
@@ -17,4 +17,12 @@ sealed class Screens(val route: String) {
 		}
 	)
 
+	data class GameScreenWithRoomId(val roomId: String) : Screens(
+		route = buildString {
+			append("/game?")
+			append(ScreenParameters.ROOM_CODE_PARAMS)
+			append("=")
+			append(roomId)
+		}
+	)
 }

@@ -38,20 +38,32 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.eva.androidtictactoe.R
+import com.eva.androidtictactoe.presentation.screens.feature_room.composable.RoomJoinDialog
+import com.eva.androidtictactoe.presentation.screens.feature_room.utils.RoomInteractionEvents
+import com.eva.androidtictactoe.presentation.screens.feature_room.utils.VerifyRoomState
 import com.eva.androidtictactoe.presentation.utils.LocalSnackBarHostState
 import com.eva.androidtictactoe.ui.theme.AndroidTicTacToeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun JoinRoomScreen(
-	roomId: String,
-	onRoomIdChange: (String) -> Unit,
+fun VerifyRoomScreen(
+	state: VerifyRoomState,
+	onRoomEvents: (RoomInteractionEvents) -> Unit,
 	modifier: Modifier = Modifier,
 	navigation: (@Composable () -> Unit)? = null,
-	onVerify: () -> Unit,
-	onCreateRoom: () -> Unit,
+	onCreateRedirect: () -> Unit,
 	snackBarHostState: SnackbarHostState = LocalSnackBarHostState.current
 ) {
+	if (state.showDialog) {
+		RoomJoinDialog(
+			message = state.message,
+			model = state.response,
+			onConfirm = { roomId -> onRoomEvents(RoomInteractionEvents.OnDialogConfirm(roomId)) },
+			onDismiss = { onRoomEvents(RoomInteractionEvents.OnDialogToggle) }
+		)
+	}
+
+
 	Scaffold(
 		topBar = {
 			CenterAlignedTopAppBar(
@@ -63,7 +75,8 @@ fun JoinRoomScreen(
 						titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant
 					)
 			)
-		}, snackbarHost = { SnackbarHost(snackBarHostState) }
+		},
+		snackbarHost = { SnackbarHost(snackBarHostState) }
 	) { scPadding ->
 		Column(
 			modifier = modifier
@@ -81,9 +94,9 @@ fun JoinRoomScreen(
 			)
 			Spacer(modifier = Modifier.height(20.dp))
 			OutlinedTextField(
-				value = roomId,
+				value = state.roomId,
 				textStyle = MaterialTheme.typography.bodyMedium,
-				onValueChange = onRoomIdChange,
+				onValueChange = { onRoomEvents(RoomInteractionEvents.OnValueChange(it)) },
 				label = { Text(text = "Room") },
 				placeholder = { Text(text = stringResource(id = R.string.room_placeholder)) },
 				keyboardOptions = KeyboardOptions(
@@ -112,19 +125,21 @@ fun JoinRoomScreen(
 			)
 			Spacer(modifier = Modifier.weight(1f))
 			Button(
-				onClick = onVerify, modifier = Modifier
+				onClick = { onRoomEvents(RoomInteractionEvents.RoomDataRequest) },
+				modifier = Modifier
 					.fillMaxWidth()
-					.sizeIn(
-						minHeight = dimensionResource(id = R.dimen.button_height)
-					), shape = MaterialTheme.shapes.medium
+					.sizeIn(minHeight = dimensionResource(id = R.dimen.button_height)),
+				shape = MaterialTheme.shapes.medium,
+				enabled = !state.isLoading
 			) {
 				Text(
-					text = "Verify Room", style = MaterialTheme.typography.bodyLarge
+					text = "Verify Room",
+					style = MaterialTheme.typography.bodyLarge
 				)
 			}
 			Spacer(modifier = Modifier.padding(vertical = 4.dp))
 			TextButton(
-				onClick = onCreateRoom,
+				onClick = onCreateRedirect,
 				colors = ButtonDefaults.textButtonColors(
 					contentColor = MaterialTheme.colorScheme.onSurfaceVariant
 				)
@@ -152,13 +167,12 @@ fun JoinRoomScreen(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
-fun JoinRoomScreenPreview() {
+fun VerifyRoomScreenPreview() {
 	AndroidTicTacToeTheme {
-		JoinRoomScreen(
-			roomId = "",
-			onRoomIdChange = {},
-			onVerify = {},
-			onCreateRoom = {}
+		VerifyRoomScreen(
+			onCreateRedirect = {},
+			state = VerifyRoomState(),
+			onRoomEvents = {}
 		)
 	}
 }

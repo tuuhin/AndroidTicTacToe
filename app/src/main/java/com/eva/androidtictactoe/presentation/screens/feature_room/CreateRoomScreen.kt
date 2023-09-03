@@ -36,22 +36,34 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.eva.androidtictactoe.R
+import com.eva.androidtictactoe.presentation.screens.feature_room.composable.RoomCreateDialog
+import com.eva.androidtictactoe.presentation.screens.feature_room.utils.CreateRoomState
+import com.eva.androidtictactoe.presentation.screens.feature_room.utils.RoomInteractionEvents
+import com.eva.androidtictactoe.presentation.utils.FakePreview
 import com.eva.androidtictactoe.presentation.utils.LocalSnackBarHostState
 import com.eva.androidtictactoe.ui.theme.AndroidTicTacToeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateRoomScreen(
-	boardCount: Int,
-	onBoardCountChange: (String) -> Unit,
 	modifier: Modifier = Modifier,
 	navigation: (@Composable () -> Unit)? = null,
-	onCreate: () -> Unit,
-	onJoinRoute: () -> Unit,
+	createRoomState: CreateRoomState,
+	onCreateRoomEvents: (RoomInteractionEvents) -> Unit,
+	onJoinRedirect: () -> Unit,
 	snackBarHostState: SnackbarHostState = LocalSnackBarHostState.current
 ) {
+	if (createRoomState.showDialog) {
+		RoomCreateDialog(
+			responseModel = createRoomState.response,
+			onConfirm = { roomId -> onCreateRoomEvents(RoomInteractionEvents.OnDialogConfirm(roomId)) },
+			onDismiss = { onCreateRoomEvents(RoomInteractionEvents.OnDialogToggle) }
+		)
+	}
 	Scaffold(
 		topBar = {
 			CenterAlignedTopAppBar(
@@ -82,15 +94,18 @@ fun CreateRoomScreen(
 			)
 			Spacer(modifier = Modifier.height(20.dp))
 			OutlinedTextField(
-				value = "$boardCount",
+				value = createRoomState.boardCount,
 				textStyle = MaterialTheme.typography.bodyMedium,
-				onValueChange = onBoardCountChange,
+				onValueChange = { newCount ->
+					onCreateRoomEvents(RoomInteractionEvents.OnValueChange(newCount))
+				},
 				label = { Text(text = "Number of Boards") },
 				placeholder = { Text(text = "1") },
 				keyboardOptions = KeyboardOptions(
 					autoCorrect = false,
 					keyboardType = KeyboardType.Number
 				),
+				supportingText = { Text(text = "The default value for board count is 1") },
 				maxLines = 1,
 				singleLine = true,
 				modifier = Modifier.fillMaxWidth(),
@@ -113,11 +128,12 @@ fun CreateRoomScreen(
 			)
 			Spacer(modifier = Modifier.weight(1f))
 			Button(
-				onClick = onCreate,
+				onClick = { onCreateRoomEvents(RoomInteractionEvents.RoomDataRequest) },
 				modifier = Modifier
 					.fillMaxWidth()
 					.sizeIn(minHeight = dimensionResource(id = R.dimen.button_height)),
-				shape = MaterialTheme.shapes.medium
+				shape = MaterialTheme.shapes.medium,
+				enabled = !createRoomState.isLoading
 			) {
 				Text(
 					text = "Create Room",
@@ -126,7 +142,7 @@ fun CreateRoomScreen(
 			}
 			Spacer(modifier = Modifier.padding(vertical = 4.dp))
 			TextButton(
-				onClick = onJoinRoute,
+				onClick = onJoinRedirect,
 				colors = ButtonDefaults.textButtonColors(
 					contentColor = MaterialTheme.colorScheme.onSurfaceVariant
 				)
@@ -134,7 +150,10 @@ fun CreateRoomScreen(
 				Text(
 					text = buildAnnotatedString {
 						withStyle(
-							style = SpanStyle(fontSize = MaterialTheme.typography.bodySmall.fontSize)
+							style = SpanStyle(
+								fontSize = MaterialTheme.typography.bodySmall.fontSize,
+								color = MaterialTheme.colorScheme.onSurfaceVariant
+							)
 						) { append("Already have a code") }
 						withStyle(
 							style = SpanStyle(
@@ -150,16 +169,29 @@ fun CreateRoomScreen(
 	}
 }
 
+
+class CreateRoomDialogPreviewParams : CollectionPreviewParameterProvider<CreateRoomState>(
+	listOf(
+		CreateRoomState(),
+		CreateRoomState(
+			showDialog = true,
+			response = FakePreview.FAKE_ROOM_RESPONSE_MODEL
+		)
+	)
+)
+
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
-fun CreateRoomScreenPreview() {
+fun CreateRoomScreenPreview(
+	@PreviewParameter(CreateRoomDialogPreviewParams::class)
+	state: CreateRoomState
+) {
 	AndroidTicTacToeTheme {
 		CreateRoomScreen(
-			onCreate = {},
-			onJoinRoute = {},
-			boardCount = 10,
-			onBoardCountChange = {}
+			onJoinRedirect = {},
+			createRoomState = state,
+			onCreateRoomEvents = {},
 		)
 	}
 }

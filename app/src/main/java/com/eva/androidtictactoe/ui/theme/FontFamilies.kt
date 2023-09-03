@@ -6,5 +6,9 @@ import androidx.compose.ui.text.font.FontWeight
 import com.eva.androidtictactoe.R
 
 val OutlineFontFamily = FontFamily(
-    Font(R.font.outline, weight = FontWeight.SemiBold)
+	Font(R.font.outline, weight = FontWeight.SemiBold)
+)
+
+val HugwaFontFamily = FontFamily(
+	Font(R.font.hugwa_black, weight = FontWeight.SemiBold)
 )

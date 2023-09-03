@@ -1,4 +1,4 @@
-package com.eva.androidtictactoe.presentation.utils
+package com.eva.androidtictactoe.presentation.composables
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

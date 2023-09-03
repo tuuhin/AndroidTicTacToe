@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class VerifiedRoomSerializer(
-	@SerialName("message") val message: String,
+	@SerialName("message") val message: String = "",
 	@SerialName("room") val room: RoomSerializer
 )
