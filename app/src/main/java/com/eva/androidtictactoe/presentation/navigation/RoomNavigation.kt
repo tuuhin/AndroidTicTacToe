@@ -35,13 +35,14 @@ fun NavGraphBuilder.roomNavigation(
 		composable(route = Screens.BoardingRoute.route) { entry ->
 
 			val viewModel = entry.sharedKoinViewModel<PlayerRoomViewModel>(navController)
-			val userName by viewModel.userName.collectAsStateWithLifecycle()
+			val state by viewModel.userNameState.collectAsStateWithLifecycle()
 
 			OnBoardingScreen(
-				userName = userName,
+				state = state,
 				onUserNameEvents = viewModel::onUserNameEvents,
 				onJoinRedirect = onJoinRedirect,
-				onCreateRedirect = onCreateRedirect
+				onCreateRedirect = onCreateRedirect,
+				onAnonymousPlay = { onGameScreen(null) }
 			)
 		}
 		composable(route = Screens.CreateRoomRoute.route) { entry ->

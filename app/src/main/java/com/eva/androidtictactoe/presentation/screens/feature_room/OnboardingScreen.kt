@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -29,10 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,28 +49,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.eva.androidtictactoe.R
 import com.eva.androidtictactoe.presentation.screens.feature_room.composable.UserNameWarningDialog
+import com.eva.androidtictactoe.presentation.screens.feature_room.utils.ChangeUserNameState
 import com.eva.androidtictactoe.presentation.screens.feature_room.utils.UserNameEvents
 import com.eva.androidtictactoe.ui.theme.AndroidTicTacToeTheme
 import com.eva.androidtictactoe.ui.theme.HugwaFontFamily
+import com.eva.androidtictactoe.ui.theme.KgShadowFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnBoardingScreen(
-	userName: String,
+	state: ChangeUserNameState,
 	onUserNameEvents: (UserNameEvents) -> Unit,
 	onJoinRedirect: () -> Unit,
 	onCreateRedirect: () -> Unit,
+	onAnonymousPlay: () -> Unit,
 	modifier: Modifier = Modifier,
 	navigation: (@Composable () -> Unit)? = null
 ) {
-	var showDialog by remember { mutableStateOf(false) }
 	val focusRequester = remember { FocusRequester() }
 
-	if (showDialog) {
+	if (state.showDialog) {
 		UserNameWarningDialog(
-			onDismiss = { showDialog = !showDialog },
+			onDismiss = { onUserNameEvents(UserNameEvents.ToggleUserNameDialog) },
 			onConfirm = {
-				showDialog = !showDialog
+				onUserNameEvents(UserNameEvents.ToggleUserNameDialog)
 				focusRequester.requestFocus()
 			}
 		)
@@ -83,7 +84,6 @@ fun OnBoardingScreen(
 				title = {
 					Text(
 						text = stringResource(id = R.string.game_name),
-						modifier = Modifier.padding(vertical = 12.dp),
 						style = MaterialTheme.typography.titleLarge
 							.copy(fontFamily = HugwaFontFamily),
 					)
@@ -91,7 +91,7 @@ fun OnBoardingScreen(
 				navigationIcon = navigation ?: {},
 				colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
 					titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-					containerColor = MaterialTheme.colorScheme.surfaceVariant
+					containerColor = MaterialTheme.colorScheme.inverseOnSurface
 				)
 			)
 		}
@@ -118,7 +118,7 @@ fun OnBoardingScreen(
 					contentDescription = "Tic Tac Toe Game",
 					colorFilter = ColorFilter
 						.tint(MaterialTheme.colorScheme.onPrimaryContainer),
-					modifier = Modifier.padding(20.dp)
+					modifier = Modifier.padding(16.dp)
 				)
 			}
 			Text(
@@ -130,7 +130,7 @@ fun OnBoardingScreen(
 			)
 			Spacer(modifier = Modifier.weight(1f))
 			OutlinedTextField(
-				value = userName,
+				value = state.name,
 				textStyle = MaterialTheme.typography.bodyMedium,
 				onValueChange = {
 					onUserNameEvents(UserNameEvents.OnUserNameChange(it))
@@ -163,14 +163,17 @@ fun OnBoardingScreen(
 					.focusRequester(focusRequester),
 			)
 			Divider(
-				modifier = Modifier.padding(vertical = 12.dp),
+				modifier = Modifier.padding(vertical = 8.dp),
 				color = MaterialTheme.colorScheme.outline
 			)
 			Button(
 				onClick = {
 					when {
-						userName.isEmpty() -> showDialog = true
-						else -> onJoinRedirect()
+						state.name.isEmpty() -> {
+							onUserNameEvents(UserNameEvents.ToggleUserNameDialog)
+						}
+
+						else -> onAnonymousPlay()
 					}
 				},
 				modifier = Modifier
@@ -178,29 +181,77 @@ fun OnBoardingScreen(
 					.sizeIn(minHeight = dimensionResource(id = R.dimen.button_height)),
 				elevation = ButtonDefaults
 					.elevatedButtonElevation(defaultElevation = 2.dp),
-				shape = MaterialTheme.shapes.medium
+				shape = MaterialTheme.shapes.medium,
+				colors = ButtonDefaults.buttonColors(
+					containerColor = MaterialTheme.colorScheme.primary,
+					contentColor = MaterialTheme.colorScheme.onPrimary
+				)
 			) {
 				Text(
-					text = "Join Now",
-					style = MaterialTheme.typography.bodyLarge
+					text = "Play Now",
+					style = MaterialTheme.typography.titleMedium
+						.copy(fontFamily = KgShadowFontFamily)
 				)
 			}
 			Spacer(modifier = Modifier.height(8.dp))
-			FilledTonalButton(
-				onClick = {
-					when {
-						userName.isEmpty() -> showDialog = true
-						else -> onCreateRedirect()
-					}
-				},
-				modifier = Modifier
-					.fillMaxWidth()
-					.sizeIn(minHeight = dimensionResource(id = R.dimen.button_height)),
-				shape = MaterialTheme.shapes.medium
+			Row(
+				modifier = Modifier.fillMaxWidth()
 			) {
-				Text(
-					text = "Create a Room",
-					style = MaterialTheme.typography.bodyLarge
+				FilledTonalButton(
+					onClick = {
+						when {
+							state.name.isEmpty() -> {
+								onUserNameEvents(UserNameEvents.ToggleUserNameDialog)
+							}
+
+							else -> onCreateRedirect()
+						}
+					},
+					modifier = Modifier
+						.weight(.5f)
+						.sizeIn(minHeight = dimensionResource(id = R.dimen.button_height)),
+					shape = MaterialTheme.shapes.medium,
+					colors = ButtonDefaults.filledTonalButtonColors(
+						contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+						containerColor = MaterialTheme.colorScheme.primaryContainer
+					)
+				) {
+					Text(
+						text = "Create a Room",
+						style = MaterialTheme.typography.bodyLarge
+							.copy(fontFamily = KgShadowFontFamily)
+					)
+				}
+				Spacer(modifier = Modifier.width(8.dp))
+				FilledTonalButton(
+					onClick = {
+						when {
+							state.name.isEmpty() -> {
+								onUserNameEvents(UserNameEvents.ToggleUserNameDialog)
+							}
+
+							else -> onJoinRedirect()
+						}
+					},
+					modifier = Modifier
+						.weight(.5f)
+						.sizeIn(minHeight = dimensionResource(id = R.dimen.button_height)),
+					shape = MaterialTheme.shapes.medium,
+					colors = ButtonDefaults.filledTonalButtonColors(
+						contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+						containerColor = MaterialTheme.colorScheme.secondaryContainer
+					)
+				) {
+					Text(
+						text = "Join via Code",
+						style = MaterialTheme.typography.bodyLarge
+							.copy(fontFamily = KgShadowFontFamily)
+					)
+				}
+				Spacer(
+					modifier = Modifier.height(
+						height = dimensionResource(id = R.dimen.room_screens_default_bottom_spacer)
+					)
 				)
 			}
 		}
@@ -214,10 +265,11 @@ fun OnBoardingScreen(
 fun OnBoardingScreenPreview() {
 	AndroidTicTacToeTheme {
 		OnBoardingScreen(
-			userName = "",
+			state = ChangeUserNameState(),
 			onUserNameEvents = {},
 			onJoinRedirect = {},
 			onCreateRedirect = {},
+			onAnonymousPlay = {},
 		)
 	}
 }

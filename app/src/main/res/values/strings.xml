@@ -9,10 +9,14 @@
     <string name="create_room_route_title">Create Room</string>
     <string name="join_room_route_title">Join Room</string>
     <string name="join_room_subtitle">Verify the received room code.</string>
-    <string name="no_username_dialog_text">Username not found. A username is required for playing the game,a username differenciate you from other users.</string>
+    <string name="no_username_dialog_text">Username not found. A username is required for playing the game,a username differentiate you from other users.</string>
     <string name="dialog_confirm_text">Got it</string>
 
     <string name="create_room_dialog_title">Create New Room</string>
     <string name="request_failed_dialog_text">Seems the request isn\'t successful</string>
     <string name="verify_room_dialog_title">Room Verification</string>
+    <string name="create_room_dialog_text">Your request to create a new room is successful. RoomId is copied to clipboard continue to join.</string>
+    <string name="verify_room_dialog_text">Room is verified, you can continue to join the game.</string>
+    <string name="game_screen_title">Game Screen</string>
+    <string name="cancel_game_dialog_text">Cancelling the game will mark the other user as the winner, if its cancelled before the game is over</string>
 </resources>

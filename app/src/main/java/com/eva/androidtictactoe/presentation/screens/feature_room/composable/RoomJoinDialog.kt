@@ -1,16 +1,23 @@
 package com.eva.androidtictactoe.presentation.screens.feature_room.composable
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.eva.androidtictactoe.R
 import com.eva.androidtictactoe.domain.model.RoomResponseModel
+import com.eva.androidtictactoe.presentation.utils.FakePreview
+import com.eva.androidtictactoe.ui.theme.AndroidTicTacToeTheme
+import com.eva.androidtictactoe.ui.theme.KgShadowFontFamily
 
 @Composable
 fun RoomJoinDialog(
@@ -23,38 +30,48 @@ fun RoomJoinDialog(
 	AlertDialog(
 		onDismissRequest = onDismiss,
 		confirmButton = {
-			Button(
+			TextButton(
 				onClick = { model?.roomId?.let(onConfirm) },
-				enabled = model?.roomId != null
+				enabled = model?.roomId != null,
+				colors = ButtonDefaults
+					.textButtonColors(contentColor = MaterialTheme.colorScheme.primary)
 			) {
 				Text(
 					text = "Join Game",
 					style = MaterialTheme.typography.bodyMedium
+						.copy(fontFamily = KgShadowFontFamily)
 				)
 			}
 		},
-		title = { Text(text = stringResource(id = R.string.verify_room_dialog_title)) },
+		title = {
+			Text(
+				text = stringResource(id = R.string.verify_room_dialog_title),
+				style = MaterialTheme.typography.titleLarge
+			)
+		},
 		text = {
-			Column {
-				Text(
-					text = message,
-					style = MaterialTheme.typography.bodyLarge,
-					color = MaterialTheme.colorScheme.onTertiaryContainer
-				)
-				model?.let {
+			model?.let {
+				Column(
+					verticalArrangement = Arrangement.spacedBy(4.dp)
+				) {
 					Text(
-						text = "Room Verified continue to join the game.",
+						text = stringResource(id = R.string.verify_room_dialog_text),
 						style = MaterialTheme.typography.bodyMedium
 					)
-				} ?: Text(
-					text = stringResource(id = R.string.request_failed_dialog_text),
-					style = MaterialTheme.typography.bodyMedium
-				)
-			}
+					Text(
+						text = message,
+						style = MaterialTheme.typography.bodySmall,
+						modifier = Modifier.align(Alignment.CenterHorizontally)
+					)
+				}
+			} ?: Text(
+				text = stringResource(id = R.string.request_failed_dialog_text),
+				style = MaterialTheme.typography.bodyMedium
+			)
 		},
 		textContentColor = MaterialTheme.colorScheme.secondary,
 		titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-		shape = MaterialTheme.shapes.medium,
+		shape = MaterialTheme.shapes.large,
 		modifier = modifier
 	)
 }
@@ -62,9 +79,12 @@ fun RoomJoinDialog(
 @Preview
 @Composable
 fun RoomJoinDialogPreview() {
-	RoomJoinDialog(
-		onDismiss = { },
-		onConfirm = {},
-		message = "Cannot create this room"
-	)
+	AndroidTicTacToeTheme {
+		RoomJoinDialog(
+			onDismiss = { },
+			onConfirm = {},
+			message = "Room is join-able",
+			model = FakePreview.FAKE_ROOM_RESPONSE_MODEL
+		)
+	}
 }

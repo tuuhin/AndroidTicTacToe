@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eva.androidtictactoe.data.local.UserPreferencesFacade
 import com.eva.androidtictactoe.domain.repository.PlayerRoomRepository
+import com.eva.androidtictactoe.presentation.screens.feature_room.utils.ChangeUserNameState
 import com.eva.androidtictactoe.presentation.screens.feature_room.utils.CreateRoomState
 import com.eva.androidtictactoe.presentation.screens.feature_room.utils.RoomInteractionEvents
 import com.eva.androidtictactoe.presentation.screens.feature_room.utils.UserNameEvents
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -41,24 +43,33 @@ class PlayerRoomViewModel(
 	private val _checkRoomState = MutableStateFlow(VerifyRoomState())
 	val checkRoomState = _checkRoomState.asStateFlow()
 
-	private val _userName = MutableStateFlow("")
-	val userName = merge(_userName, _localName)
-		.stateIn(
+	private val _userNameState = MutableStateFlow(ChangeUserNameState())
+
+	val userNameState = merge(_userNameState.map { it.name }, _localName)
+		.map { name ->
+			ChangeUserNameState(name = name, showDialog = _userNameState.value.showDialog)
+		}.stateIn(
 			viewModelScope,
 			SharingStarted.Eagerly,
-			initialValue = ""
+			initialValue = ChangeUserNameState()
 		)
 
 	fun onUserNameEvents(event: UserNameEvents) {
 		when (event) {
-			is UserNameEvents.OnUserNameChange -> _userName.update { event.value }
+			is UserNameEvents.OnUserNameChange -> _userNameState.update { state ->
+				state.copy(name = event.value)
+			}
+
 			UserNameEvents.OnNameChangeConfirm -> saveUserName()
+			UserNameEvents.ToggleUserNameDialog -> _userNameState.update { state ->
+				state.copy(showDialog = !state.showDialog)
+			}
 		}
 	}
 
 
 	private fun saveUserName() = viewModelScope.launch {
-		preferences.setPlayerUserName(userName.value)
+		preferences.setPlayerUserName(_userNameState.value.name)
 	}
 
 	fun onCheckRoomEvents(event: RoomInteractionEvents) {
@@ -123,8 +134,7 @@ class PlayerRoomViewModel(
 					}
 				}
 			}
-		}
-			.launchIn(this)
+		}.launchIn(this)
 	}
 
 
