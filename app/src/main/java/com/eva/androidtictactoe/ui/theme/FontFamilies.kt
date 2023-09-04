@@ -12,3 +12,8 @@ val OutlineFontFamily = FontFamily(
 val HugwaFontFamily = FontFamily(
 	Font(R.font.hugwa_black, weight = FontWeight.SemiBold)
 )
+
+
+val KgShadowFontFamily = FontFamily(
+	Font(R.font.kg_shadow, weight = FontWeight.Medium)
+)
