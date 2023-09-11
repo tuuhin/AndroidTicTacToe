@@ -1,13 +1,31 @@
 package com.eva.androidtictactoe.utils
 
-object ApiPaths {
+sealed class ApiPaths(val route: String) {
 
-    const val ROOM_ROUTE = "/room"
+	object CreateRoomPath : ApiPaths(route = "/room/create")
+	object JoinRoomPath : ApiPaths(route = "/room/join")
 
-    const val CREATE_ROOM_PATH = "/create"
-    const val CHECK_ROOM_PATH = "/join"
+	data class AnonymousGamePath(val clientId: String, val userName: String? = null) :
+		ApiPaths(
+			route = buildString {
+				append("/ws/game?client_id=${clientId}")
+				userName?.let { name ->
+					append("&userName=$name")
+				}
+			}
+		)
 
-    const val WEBSOCKET_ROUTE = "/ws"
+	data class RoomBasedGamePath(
+		val clientId: String,
+		val userName: String? = null,
+		val roomId: String
+	) : ApiPaths(
+		route = buildString {
 
-    const val GAME_SOCKET_PATH = "/game"
+			append("/ws/game/${roomId}?client_id=${clientId}")
+			userName?.let { name ->
+				append("&userName=$name")
+			}
+		}
+	)
 }

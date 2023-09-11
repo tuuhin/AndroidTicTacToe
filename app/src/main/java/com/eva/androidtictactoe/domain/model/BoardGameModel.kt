@@ -1,16 +1,17 @@
 package com.eva.androidtictactoe.domain.model
 
 data class BoardGameModel(
-    val boardState: List<List<BoardSymbols>> = emptyBoardState(),
-    val isDraw: Boolean = false
+	val boardGameModel: GameRoomModel,
+	val player: GamePlayerModel?,
+	val opponent: GamePlayerModel?,
+	val isReady: Boolean
 ) {
-    companion object {
-        fun emptyBoardState(): List<List<BoardSymbols>> {
-            return listOf(
-                listOf(BoardSymbols.Blank, BoardSymbols.Blank, BoardSymbols.Blank),
-                listOf(BoardSymbols.Blank, BoardSymbols.Blank, BoardSymbols.Blank),
-                listOf(BoardSymbols.Blank, BoardSymbols.Blank, BoardSymbols.Blank)
-            )
-        }
-    }
+	companion object {
+		val UN_INITIALIZE_GAME = BoardGameModel(
+			boardGameModel = GameRoomModel.BLANK_ROOM,
+			isReady = false,
+			player = null,
+			opponent = null
+		)
+	}
 }

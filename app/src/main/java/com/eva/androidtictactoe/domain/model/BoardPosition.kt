@@ -1,10 +1,11 @@
 package com.eva.androidtictactoe.domain.model
 
+
 data class BoardPosition(
-    val x: Int,
-    val y: Int
+	val x: Int,
+	val y: Int
 ) {
-    companion object {
-        val ZeroZero = BoardPosition(0, 0)
-    }
+	companion object {
+		val ZeroZero = BoardPosition(0, 0)
+	}
 }

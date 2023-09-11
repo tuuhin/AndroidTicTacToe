@@ -1,9 +1,18 @@
 package com.eva.androidtictactoe.domain.model
 
+
 data class GameRoomModel(
-    val room: String,
-    val players: List<GamePlayerModel> = emptyList(),
-    val board: BoardGameModel = BoardGameModel(),
-    val boardCount: Int = 1,
-    val isGameComplete: Boolean = false
-)
+	val room: String,
+	val board: TicTacToeBoardModel = TicTacToeBoardModel(),
+	val boardCount: Int,
+	val isAnonymous: Boolean
+) {
+	companion object {
+		val BLANK_ROOM = GameRoomModel(
+			room = "",
+			isAnonymous = false,
+			board = TicTacToeBoardModel(),
+			boardCount = 1
+		)
+	}
+}
