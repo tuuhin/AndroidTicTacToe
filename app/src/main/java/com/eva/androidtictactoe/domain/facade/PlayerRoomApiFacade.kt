@@ -1,4 +1,4 @@
-package com.eva.androidtictactoe.domain.repository
+package com.eva.androidtictactoe.domain.facade
 
 import com.eva.androidtictactoe.data.remote.dto.RoomSerializer
 import com.eva.androidtictactoe.data.remote.dto.VerifiedRoomSerializer

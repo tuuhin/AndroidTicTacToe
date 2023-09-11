@@ -19,25 +19,27 @@ android {
 		vectorDrawables {
 			useSupportLibrary = true
 		}
-	}
-
-	buildTypes {
 
 		val baseUriType = "String"
 		val baseUriName = "BASE_URI"
-		val baseUriValue = "\"https://tic-tac-toe-app-2i4i.onrender.com\""
 
-		debug {
-			buildConfigField(type = baseUriType, name = baseUriName, value = baseUriValue)
-		}
+		val baseUriValue = "\"tic-tac-toe-app-2i4i.onrender.com\""
 
+		buildConfigField(
+			type = baseUriType,
+			name = baseUriName,
+			value = baseUriValue
+		)
+
+	}
+
+	buildTypes {
 		release {
 			isMinifyEnabled = false
 			proguardFiles(
 				getDefaultProguardFile("proguard-android-optimize.txt"),
 				"proguard-rules.pro"
 			)
-			buildConfigField(type = baseUriType, name = baseUriName, value = baseUriValue)
 		}
 	}
 	compileOptions {
@@ -91,7 +93,6 @@ dependencies {
 	api(libs.koin.core)
 	implementation(libs.koin.android)
 	implementation(libs.koin.compose)
-
 	//test dependencies
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.test.ext.junit)

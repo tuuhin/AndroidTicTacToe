@@ -2,9 +2,9 @@ package com.eva.androidtictactoe.data.repository
 
 import com.eva.androidtictactoe.data.mapper.toModel
 import com.eva.androidtictactoe.data.remote.dto.BaseResponseDto
+import com.eva.androidtictactoe.domain.facade.PlayerRoomApiFacade
 import com.eva.androidtictactoe.domain.model.RoomResponseModel
 import com.eva.androidtictactoe.domain.model.RoomVerificationModel
-import com.eva.androidtictactoe.domain.repository.PlayerRoomApiFacade
 import com.eva.androidtictactoe.domain.repository.PlayerRoomRepository
 import com.eva.androidtictactoe.utils.ClipBoardSaver
 import com.eva.androidtictactoe.utils.Resource
@@ -17,8 +17,7 @@ import kotlinx.coroutines.flow.flowOn
 import java.io.IOException
 
 class PlayerRoomRepoImpl(
-	private val roomApi: PlayerRoomApiFacade,
-	private val clipBoardSaver: ClipBoardSaver
+	private val roomApi: PlayerRoomApiFacade, private val clipBoardSaver: ClipBoardSaver
 ) : PlayerRoomRepository {
 	override suspend fun createRoom(rounds: Int): Flow<Resource<RoomResponseModel>> {
 		return flow {
@@ -31,9 +30,11 @@ class PlayerRoomRepoImpl(
 				val body = e.response.body<BaseResponseDto>()
 				emit(Resource.Error(message = body.detail))
 			} catch (e: IOException) {
-				emit(Resource.Error(message = "IO exception occurred"))
+				e.printStackTrace()
+				emit(Resource.Error(message = e.localizedMessage ?: "IO exception occurred"))
 			} catch (e: Exception) {
-				emit(Resource.Error(message = "Exception Occurred"))
+				e.printStackTrace()
+				emit(Resource.Error(message = e.localizedMessage ?: "Exception Occurred"))
 			}
 		}.flowOn(Dispatchers.IO)
 	}
@@ -48,10 +49,11 @@ class PlayerRoomRepoImpl(
 				val body = e.response.body<BaseResponseDto>()
 				emit(Resource.Error(message = body.detail))
 			} catch (e: IOException) {
-				emit(Resource.Error(message = "IO exception occurred"))
+				e.printStackTrace()
+				emit(Resource.Error(message = e.localizedMessage ?: "IO exception occurred"))
 			} catch (e: Exception) {
 				e.printStackTrace()
-				emit(Resource.Error(message = "Exception Occurred"))
+				emit(Resource.Error(message = e.localizedMessage ?: "Exception Occurred"))
 			}
 		}.flowOn(Dispatchers.IO)
 	}

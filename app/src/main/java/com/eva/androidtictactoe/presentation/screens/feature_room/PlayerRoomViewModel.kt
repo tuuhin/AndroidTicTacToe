@@ -45,13 +45,10 @@ class PlayerRoomViewModel(
 
 	private val _userNameState = MutableStateFlow(ChangeUserNameState())
 
-	val userNameState = merge(_userNameState.map { it.name }, _localName)
-		.map { name ->
+	val userNameState = merge(_userNameState.map { it.name }, _localName).map { name ->
 			ChangeUserNameState(name = name, showDialog = _userNameState.value.showDialog)
 		}.stateIn(
-			viewModelScope,
-			SharingStarted.Eagerly,
-			initialValue = ChangeUserNameState()
+			viewModelScope, SharingStarted.Eagerly, initialValue = ChangeUserNameState()
 		)
 
 	fun onUserNameEvents(event: UserNameEvents) {
@@ -113,7 +110,7 @@ class PlayerRoomViewModel(
 				_createRoomState.update { state -> state.copy(showDialog = false) }
 				_checkRoomState.update { state -> state.copy(roomId = event.roomId) }
 				viewModelScope.launch {
-					_uiEvents.emit(UiEvents.Navigate(route = ApiPaths.CHECK_ROOM_PATH))
+					_uiEvents.emit(UiEvents.Navigate(route = ApiPaths.JoinRoomPath.route))
 				}
 			}
 		}
