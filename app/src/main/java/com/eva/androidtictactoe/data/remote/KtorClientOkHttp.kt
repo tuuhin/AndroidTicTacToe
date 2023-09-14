@@ -4,7 +4,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.request.header
@@ -18,12 +20,15 @@ import java.time.Duration
 object KtorClientOkHttp {
 
 	fun getInstance(): HttpClient = HttpClient(OkHttp) {
+
 		engine {
 			config {
 				retryOnConnectionFailure(true)
 				connectTimeout(Duration.ofSeconds(10))
+				pingInterval(Duration.ofSeconds(15))
 			}
 		}
+
 		install(ContentNegotiation) {
 			json()
 		}
@@ -33,8 +38,10 @@ object KtorClientOkHttp {
 		}
 
 		install(Logging) {
+			logger = Logger.ANDROID
 			level = LogLevel.ALL
 		}
+
 		install(WebSockets) {
 			maxFrameSize = Long.MAX_VALUE
 			contentConverter = KotlinxWebsocketSerializationConverter(Json)

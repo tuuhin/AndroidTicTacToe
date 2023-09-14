@@ -25,48 +25,76 @@ class BoardGameApiImpl(
 	private val client: HttpClient
 ) : BoardGameApiFacade {
 
-
-	private val socketHost = "${URLProtocol.WSS.name}/${BuildConfig.BASE_URI}"
-
 	private var _webSocketSession: DefaultClientWebSocketSession? = null
 
+	private val _serverMessages = MutableStateFlow(value = "")
 	override val serverMessage: MutableStateFlow<String>
-		get() = MutableStateFlow(value = "")
+		get() = _serverMessages
 
+	private val _boardGame = MutableStateFlow(value = BoardGameRoomDataDto())
 	override val boardGameData: MutableStateFlow<BoardGameRoomDataDto>
-		get() = MutableStateFlow(value = BoardGameRoomDataDto())
+		get() = _boardGame
 
-	override suspend fun onConnect(clientId: String, userName: String?) {
+	override suspend fun onConnect(
+		clientId: String,
+		userName: String?,
+		socketBlock: suspend () -> Unit
+	) {
 
 		val wsPath = ApiPaths.AnonymousGamePath(
 			clientId = clientId, userName = userName
 		)
 
 		client.webSocket(
-			method = HttpMethod.Get, path = wsPath.route, host = socketHost
+			method = HttpMethod.Get,
+			host = BuildConfig.BASE_URI,
+			path = wsPath.route,
+			request = {
+				url {
+					protocol = URLProtocol.WSS
+				}
+			}
 		) {
 			_webSocketSession = this
+			socketBlock()
 		}
 	}
 
-	override suspend fun onConnect(roomId: String, clientId: String, userName: String?) {
+	override suspend fun onConnect(
+		roomId: String,
+		clientId: String,
+		userName: String?,
+		socketBlock: suspend () -> Unit
+	) {
 
 		val wsPath = ApiPaths.RoomBasedGamePath(
 			roomId = roomId, clientId = clientId, userName = userName
 		)
 
 		client.webSocket(
-			method = HttpMethod.Get, path = wsPath.route, host = socketHost
+			method = HttpMethod.Get,
+			host = BuildConfig.BASE_URI,
+			path = wsPath.route,
+			request = {
+				url {
+					protocol = URLProtocol.WSS
+				}
+			}
 		) {
-
 			_webSocketSession = this
+			socketBlock()
 		}
 	}
 
-	override suspend fun onDisconnect() {
+	override suspend fun onDisconnect(
+		reason: CloseReason?,
+		disconnectBlock: (suspend () -> Unit)?
+	) {
+		disconnectBlock?.let { it() }
 		_webSocketSession?.close(
-			reason = CloseReason(
-				code = CloseReason.Codes.NORMAL, message = "Close successfully"
+			reason = reason ?: CloseReason(
+				code = CloseReason.Codes.NORMAL,
+				message = "Close successfully"
 			)
 		)
 		_webSocketSession = null
@@ -78,9 +106,9 @@ class BoardGameApiImpl(
 				val readText = frameText.readText()
 				when (val data = Json.decodeFromString<ReceiveEventsDto>(string = readText)) {
 
-					is ReceiveEventsDto.ReceivedGameData -> boardGameData.update { data.state }
+					is ReceiveEventsDto.ReceivedGameData -> _boardGame.update { data.state }
 
-					is ReceiveEventsDto.ReceivedMessage -> serverMessage.update { data.message }
+					is ReceiveEventsDto.ReceivedMessage -> _serverMessages.update { data.message }
 				}
 			}
 		}

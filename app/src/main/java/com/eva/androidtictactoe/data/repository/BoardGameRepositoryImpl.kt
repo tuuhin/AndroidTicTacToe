@@ -8,7 +8,6 @@ import com.eva.androidtictactoe.domain.facade.BoardGameApiFacade
 import com.eva.androidtictactoe.domain.model.BoardGameModel
 import com.eva.androidtictactoe.domain.model.BoardPosition
 import com.eva.androidtictactoe.domain.repository.GameRepository
-import com.eva.androidtictactoe.utils.Resource
 import io.ktor.client.plugins.websocket.WebSocketException
 import io.ktor.util.generateNonce
 import kotlinx.coroutines.Dispatchers
@@ -20,73 +19,98 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class BoardGameRepositoryImpl(
-	private val boardGame: BoardGameApiFacade,
+	private val gameFacade: BoardGameApiFacade,
 ) : GameRepository {
+
+	private var _clientId: String? = null
+
 	override val clientId: String
-		get() = generateNonce()
+		get() = _clientId ?: kotlin.run {
+			val uniqueId = generateNonce()
+			_clientId = uniqueId
+			uniqueId
+		}
+
 	override val gameBoard: Flow<BoardGameModel>
-		get() = boardGame.boardGameData.map { it.toModel(clientId) }
+		get() = gameFacade.boardGameData.map { it.toModel(clientId) }
 
 	override val serverMessage: StateFlow<String>
-		get() = boardGame.serverMessage
+		get() = gameFacade.serverMessage
 
+
+	private val _connectionEvents = MutableSharedFlow<String>()
 	override val connectionEvents: MutableSharedFlow<String>
-		get() = MutableSharedFlow()
+		get() = _connectionEvents
 
 	override suspend fun connectWithRoomId(room: String, userName: String?) {
 		return withContext(Dispatchers.IO) {
 			try {
-				boardGame.onConnect(roomId = room, userName = userName, clientId = clientId)
-				val received = launch { boardGame.onReceive() }
-				received.join()
+				gameFacade.onConnect(
+					roomId = room,
+					userName = userName,
+					clientId = clientId,
+					socketBlock = {
+						val receive = launch(coroutineContext) { gameFacade.onReceive() }
+						receive.join()
+					},
+				)
+
 			} catch (e: WebSocketException) {
-				connectionEvents.emit(value = e.localizedMessage ?: "Websocket Exception")
+				_connectionEvents.emit(value = e.localizedMessage ?: "Websocket Exception")
 			} catch (e: Exception) {
-				connectionEvents.emit(value = e.localizedMessage ?: "exception occurred")
+				_connectionEvents.emit(value = e.localizedMessage ?: "exception occurred")
 			}
 		}
 	}
+
 
 	override suspend fun connectAnonymously(userName: String?) {
 		return withContext(Dispatchers.IO) {
 			try {
-				boardGame.onConnect(clientId = clientId, userName = userName)
-				val received = launch { boardGame.onReceive() }
-				received.join()
+				gameFacade.onConnect(
+					clientId = clientId,
+					userName = userName,
+					socketBlock = {
+						val receive = launch(coroutineContext) { gameFacade.onReceive() }
+						receive.join()
+					},
+				)
 			} catch (e: WebSocketException) {
-				connectionEvents.emit(value = e.localizedMessage ?: "Websocket Exception")
+
+				_connectionEvents.emit(value = e.localizedMessage ?: "Websocket Exception")
 			} catch (e: Exception) {
-				connectionEvents.emit(value = e.localizedMessage ?: "exception occurred")
+				_connectionEvents.emit(value = e.localizedMessage ?: "exception occurred")
 			}
 		}
 	}
 
-	override suspend fun onDisConnect(): Resource<Boolean> {
-		return try {
-			boardGame.onDisconnect()
-			Resource.Success(data = true)
-		} catch (e: WebSocketException) {
-			e.printStackTrace()
-			Resource.Error(message = e.message ?: "Websocket Error")
-		} catch (e: Exception) {
-			e.printStackTrace()
-			Resource.Error(message = e.message ?: "Error Occurred on disconnecting the session")
-		}
+
+	override suspend fun onDisConnect(): Boolean = try {
+		gameFacade.onDisconnect()
+		true
+	} catch (e: WebSocketException) {
+		e.printStackTrace()
+		false
+	} catch (e: Exception) {
+		e.printStackTrace()
+		false
 	}
 
 	override suspend fun sendBoardData(position: BoardPosition) {
-		val sendDto = SendEventsDto.SendGameData(
-			data = SendGameDataDto(
-				positionDto = position.toDto(),
-				clientId = clientId
+		return withContext(Dispatchers.IO) {
+			val sendDto = SendEventsDto.SendGameData(
+				data = SendGameDataDto(
+					positionDto = position.toDto(),
+					clientId = clientId
+				)
 			)
-		)
-		try {
-			boardGame.onSend(sendDto)
-		} catch (e: WebSocketException) {
-			connectionEvents.emit(value = e.localizedMessage ?: "Websocket Exception occured")
-		} catch (e: Exception) {
-			connectionEvents.emit(value = e.localizedMessage ?: "Exception Occured")
+			try {
+				gameFacade.onSend(sendDto)
+			} catch (e: WebSocketException) {
+				_connectionEvents.emit(value = e.localizedMessage ?: "Websocket Exception occurred")
+			} catch (e: Exception) {
+				_connectionEvents.emit(value = e.localizedMessage ?: "Exception Occurred")
+			}
 		}
 	}
 }
