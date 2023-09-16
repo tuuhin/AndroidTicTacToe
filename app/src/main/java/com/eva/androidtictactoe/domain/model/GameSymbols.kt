@@ -9,9 +9,13 @@ enum class GameSymbols(val symbol: Char) {
 
 	companion object {
 		fun fromSymbol(symbol: Char): GameSymbols = when (symbol) {
-			'X' -> XSymbol
-			'Y' -> OSymbol
+			XSymbol.symbol -> XSymbol
+			OSymbol.symbol -> OSymbol
 			else -> Blank
 		}
+	}
+
+	override fun toString(): String {
+		return this.symbol.toString()
 	}
 }

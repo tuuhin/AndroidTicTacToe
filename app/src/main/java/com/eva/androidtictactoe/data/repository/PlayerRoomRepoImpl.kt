@@ -17,7 +17,8 @@ import kotlinx.coroutines.flow.flowOn
 import java.io.IOException
 
 class PlayerRoomRepoImpl(
-	private val roomApi: PlayerRoomApiFacade, private val clipBoardSaver: ClipBoardSaver
+	private val roomApi: PlayerRoomApiFacade,
+	private val clipBoardSaver: ClipBoardSaver
 ) : PlayerRoomRepository {
 	override suspend fun createRoom(rounds: Int): Flow<Resource<RoomResponseModel>> {
 		return flow {

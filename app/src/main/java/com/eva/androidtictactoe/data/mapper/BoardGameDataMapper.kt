@@ -8,8 +8,8 @@ fun BoardGameRoomDataDto.toModel(clientId: String): BoardGameModel {
 
 	return BoardGameModel(
 		player = if (isOPlayer) playerO?.toModel() else playerX?.toModel(),
-		opponent = if (!isOPlayer) playerO?.toModel() else playerX?.toModel(),
+		opponent = if (isOPlayer) playerX?.toModel() else playerO?.toModel(),
 		isReady = didAllJoined,
-		boardGameModel = board.toModel()
+		game = board.toModel(),
 	)
 }

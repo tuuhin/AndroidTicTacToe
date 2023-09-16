@@ -50,7 +50,7 @@ class BoardGameRepositoryImpl(
 					userName = userName,
 					clientId = clientId,
 					socketBlock = {
-						val receive = launch(coroutineContext) { gameFacade.onReceive() }
+						val receive = launch(Dispatchers.IO) { gameFacade.onReceive() }
 						receive.join()
 					},
 				)
@@ -71,7 +71,7 @@ class BoardGameRepositoryImpl(
 					clientId = clientId,
 					userName = userName,
 					socketBlock = {
-						val receive = launch(coroutineContext) { gameFacade.onReceive() }
+						val receive = launch(Dispatchers.IO) { gameFacade.onReceive() }
 						receive.join()
 					},
 				)

@@ -6,5 +6,5 @@ data class GamePlayerModel(
 	val winCount: Int = 0,
 	val drawCount: Int = 0,
 	val looseCount: Int = 0,
-	val playerSymbol: GameSymbols
+	val symbol: GameSymbols
 )

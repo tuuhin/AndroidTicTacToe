@@ -8,7 +8,7 @@ import com.eva.androidtictactoe.domain.model.TicTacToeBoardModel
 fun GameRoomDto.toModel() = GameRoomModel(
 	room = room,
 	board = TicTacToeBoardModel(
-		boardState = boardLayout.map { row ->
+		boardFace = boardLayout.map { row ->
 			row.map { GameSymbols.fromSymbol(it) }
 		},
 		isDraw = isDraw
@@ -19,7 +19,7 @@ fun GameRoomDto.toModel() = GameRoomModel(
 
 fun GameRoomModel.toDto() = GameRoomDto(
 	room = room,
-	boardLayout = board.boardState.map { row -> row.map { it.symbol } },
+	boardLayout = board.boardFace.map { row -> row.map { it.symbol } },
 	isDraw = board.isDraw,
 	isAnonymous = isAnonymous,
 	boardCount = boardCount

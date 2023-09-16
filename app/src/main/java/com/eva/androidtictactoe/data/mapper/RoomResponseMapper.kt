@@ -7,5 +7,7 @@ import com.eva.androidtictactoe.domain.model.RoomVerificationModel
 
 fun RoomSerializer.toModel() = RoomResponseModel(roomId = room, rounds = rounds)
 
-fun VerifiedRoomSerializer.toModel() =
-	RoomVerificationModel(roomModel = room.toModel(), message = message)
+fun VerifiedRoomSerializer.toModel() = RoomVerificationModel(
+	roomModel = room.toModel(),
+	message = message
+)

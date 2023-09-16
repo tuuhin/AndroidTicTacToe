@@ -10,7 +10,7 @@ fun GamePlayerDto.toModel() = GamePlayerModel(
 	winCount = winCount,
 	drawCount = drawCount,
 	looseCount = lostCount,
-	playerSymbol = GameSymbols.fromSymbol(playerSymbol)
+	symbol = GameSymbols.fromSymbol(playerSymbol)
 )
 
 fun GamePlayerModel.toDto() = GamePlayerDto(
@@ -18,6 +18,6 @@ fun GamePlayerModel.toDto() = GamePlayerDto(
 	clientId = clientId,
 	winCount = winCount,
 	drawCount = drawCount,
-	playerSymbol = playerSymbol.symbol,
+	playerSymbol = symbol.symbol,
 	lostCount = looseCount
 )
