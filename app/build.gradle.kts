@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
 	id("com.android.application")
 	kotlin("android")
@@ -20,16 +22,23 @@ android {
 			useSupportLibrary = true
 		}
 
-		val baseUriType = "String"
-		val baseUriName = "BASE_URI"
+		Properties().apply {
+			rootProject.file("backend.properties").inputStream()
+				.use { stream ->
+					load(stream)
+					buildConfigField(
+						type = "String",
+						name = "BASE_URI",
+						value = "\"${getProperty("BASE_URI", "")}\""
+					)
+					buildConfigField(
+						type = "Boolean",
+						name = "IS_CONNECTION_SECURE",
+						value = getProperty("IS_CONNECTION_SECURE", "false")
+					)
+				}
 
-		val baseUriValue = "\"tic-tac-toe-app-2i4i.onrender.com\""
-
-		buildConfigField(
-			type = baseUriType,
-			name = baseUriName,
-			value = baseUriValue
-		)
+		}
 
 	}
 
@@ -84,7 +93,6 @@ dependencies {
 	//ktor client
 	implementation(libs.ktor.client.core)
 	implementation(libs.ktor.client.okhttp)
-	implementation(libs.ktor.client.cio)
 	implementation(libs.ktor.client.content.negotiation)
 	implementation(libs.ktor.client.serialization)
 	implementation(libs.ktor.client.websockets)

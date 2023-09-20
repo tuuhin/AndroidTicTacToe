@@ -51,7 +51,10 @@ class BoardGameApiImpl(
 			path = wsPath.route,
 			request = {
 				url {
-					protocol = URLProtocol.WSS
+					protocol =
+						if (BuildConfig.IS_CONNECTION_SECURE)
+							URLProtocol.WSS
+						else URLProtocol.WS
 				}
 			}
 		) {
@@ -77,7 +80,10 @@ class BoardGameApiImpl(
 			path = wsPath.route,
 			request = {
 				url {
-					protocol = URLProtocol.WSS
+					protocol =
+						if (BuildConfig.IS_CONNECTION_SECURE)
+							URLProtocol.WSS
+						else URLProtocol.WS
 				}
 			}
 		) {

@@ -13,8 +13,5 @@ data class BoardGameRoomDataDto(
 	val playerO: GamePlayerDto? = null,
 
 	@SerialName("room")
-	val board: GameRoomDto = GameRoomDto(),
-
-	@SerialName("is_ready")
-	val didAllJoined: Boolean = false
+	val board: GameRoomDto = GameRoomDto()
 )

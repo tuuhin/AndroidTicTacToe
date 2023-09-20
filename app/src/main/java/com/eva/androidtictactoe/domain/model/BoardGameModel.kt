@@ -4,5 +4,6 @@ data class BoardGameModel(
 	val game: GameRoomModel,
 	val player: GamePlayerModel?,
 	val opponent: GamePlayerModel?,
-	val isReady: Boolean
+	val isReady: Boolean,
+	val winningSymbols: GameSymbols? = null
 )

@@ -13,7 +13,9 @@ import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
+import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.http.path
 
@@ -23,10 +25,12 @@ class PlayerRoomApiImpl(
 	override suspend fun createRoom(rounds: Int): RoomSerializer {
 		val response = client.post {
 			url {
-				protocol = URLProtocol.HTTPS
+				protocol =
+					if (BuildConfig.IS_CONNECTION_SECURE) URLProtocol.HTTPS else URLProtocol.HTTP
 				host = BuildConfig.BASE_URI
 				path(ApiPaths.CreateRoomPath.route)
 			}
+			contentType(ContentType.Application.Json)
 			setBody(CreateRoomSerializer(rounds = rounds))
 		}
 		return when {
@@ -44,21 +48,21 @@ class PlayerRoomApiImpl(
 	override suspend fun checkRoom(roomId: String): VerifiedRoomSerializer {
 		val response = client.post {
 			url {
-				protocol = URLProtocol.HTTPS
+				protocol =
+					if (BuildConfig.IS_CONNECTION_SECURE) URLProtocol.HTTPS else URLProtocol.HTTP
 				host = BuildConfig.BASE_URI
-				path(ApiPaths.CreateRoomPath.route)
+				path(ApiPaths.JoinRoomPath.route)
 			}
+			contentType(ContentType.Application.Json)
 			setBody(RoomSerializer(room = roomId))
 		}
 		return when {
 			response.status.isSuccess() -> response.body()
 			response.status.value in 400 until 500 -> throw ClientRequestException(
-				response = response, cachedResponseText = response.bodyAsText()
+				response, response.bodyAsText()
 			)
 
-			else -> throw ServerResponseException(
-				response, cachedResponseText = response.bodyAsText()
-			)
+			else -> throw ServerResponseException(response, response.bodyAsText())
 		}
 	}
 }

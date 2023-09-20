@@ -5,14 +5,14 @@ data class GameRoomModel(
 	val room: String,
 	val board: TicTacToeBoardModel = TicTacToeBoardModel(),
 	val boardCount: Int,
-	val isAnonymous: Boolean
+	val currentBoardNumber: Int,
 ) {
 	companion object {
 		val BLANK_ROOM = GameRoomModel(
 			room = "",
-			isAnonymous = false,
 			board = TicTacToeBoardModel(),
-			boardCount = 1
+			boardCount = 1,
+			currentBoardNumber = 0,
 		)
 	}
 }

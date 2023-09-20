@@ -10,17 +10,16 @@ fun GameRoomDto.toModel() = GameRoomModel(
 	board = TicTacToeBoardModel(
 		boardFace = boardLayout.map { row ->
 			row.map { GameSymbols.fromSymbol(it) }
-		},
-		isDraw = isDraw
+		}, isDraw = isDraw
 	),
 	boardCount = boardCount,
-	isAnonymous = isAnonymous
+	currentBoardNumber = currentBoard
 )
 
 fun GameRoomModel.toDto() = GameRoomDto(
 	room = room,
 	boardLayout = board.boardFace.map { row -> row.map { it.symbol } },
 	isDraw = board.isDraw,
-	isAnonymous = isAnonymous,
-	boardCount = boardCount
+	boardCount = boardCount,
+	currentBoard = currentBoardNumber
 )
