@@ -1,5 +1,6 @@
 package com.eva.androidtictactoe.presentation.screens.feature_room.composable
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -72,7 +73,7 @@ fun RoomCreateDialog(
 						verticalAlignment = Alignment.CenterVertically
 					) {
 						Text(
-							text = "Room Code: ",
+							text = stringResource(id = R.string.room_code),
 							style = MaterialTheme.typography.titleMedium
 						)
 						Spacer(modifier = Modifier.width(8.dp))
@@ -103,7 +104,12 @@ fun RoomCreateDialog(
 	)
 }
 
-@Preview
+@Preview(
+	uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
+)
+@Preview(
+	uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL
+)
 @Composable
 fun RoomCreateDialogPreview() {
 	AndroidTicTacToeTheme {

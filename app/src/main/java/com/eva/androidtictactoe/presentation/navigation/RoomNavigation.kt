@@ -1,6 +1,8 @@
 package com.eva.androidtictactoe.presentation.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -23,14 +25,16 @@ fun NavGraphBuilder.roomNavigation(
 	onCreateRedirect: () -> Unit,
 	onGameScreen: (String?) -> Unit,
 ) {
-	navigation(route = Screens.RoomRoute.route,
+	navigation(
+		route = Screens.RoomRoute.route,
 		startDestination = Screens.BoardingRoute.route,
 		enterTransition = {
-			slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left)
+			slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left) + fadeIn()
 		},
 		exitTransition = {
-			slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right)
-		}) {
+			slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right) + fadeOut()
+		}
+	) {
 
 		composable(route = Screens.BoardingRoute.route) { entry ->
 
@@ -74,7 +78,7 @@ fun NavGraphBuilder.roomNavigation(
 			val snackBarHostState = LocalSnackBarHostState.current
 
 			val viewModel = entry.sharedKoinViewModel<PlayerRoomViewModel>(navController)
-			val state by viewModel.checkRoomState.collectAsStateWithLifecycle()
+			val state by viewModel.verifyRoomState.collectAsStateWithLifecycle()
 
 			LaunchedEffect(Unit) {
 				viewModel.uiEvents.collect { event ->

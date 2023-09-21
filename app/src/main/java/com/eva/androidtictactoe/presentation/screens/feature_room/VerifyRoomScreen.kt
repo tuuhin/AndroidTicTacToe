@@ -56,7 +56,9 @@ fun VerifyRoomScreen(
 		RoomJoinDialog(
 			message = state.message,
 			model = state.response,
-			onConfirm = { roomId -> onRoomEvents(RoomInteractionEvents.OnDialogConfirm(roomId)) },
+			onConfirm = { roomId ->
+				onRoomEvents(RoomInteractionEvents.OnDialogConfirm(roomId))
+			},
 			onDismiss = { onRoomEvents(RoomInteractionEvents.OnDialogToggle) },
 		)
 	}
@@ -91,17 +93,24 @@ fun VerifyRoomScreen(
 			Spacer(modifier = Modifier.weight(.5f))
 			Image(
 				painter = painterResource(id = R.drawable.ic_handshake),
-				contentDescription = "Handshake Icon",
-				colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimaryContainer),
+				contentDescription = stringResource(id = R.string.handshake_icon_content_desc),
+				colorFilter = ColorFilter
+					.tint(color = MaterialTheme.colorScheme.onPrimaryContainer),
 				modifier = Modifier.padding(vertical = 10.dp)
 			)
 			Spacer(modifier = Modifier.height(20.dp))
 			OutlinedTextField(
 				value = state.roomId,
 				textStyle = MaterialTheme.typography.bodyMedium,
-				onValueChange = { onRoomEvents(RoomInteractionEvents.OnValueChange(it)) },
-				label = { Text(text = "Room") },
-				placeholder = { Text(text = stringResource(id = R.string.room_placeholder)) },
+				onValueChange = {
+					onRoomEvents(RoomInteractionEvents.OnValueChange(it))
+				},
+				label = {
+					Text(text = stringResource(id = R.string.verify_room_text_field_label))
+				},
+				placeholder = {
+					Text(text = stringResource(id = R.string.room_placeholder))
+				},
 				keyboardOptions = KeyboardOptions(
 					autoCorrect = false, keyboardType = KeyboardType.Ascii
 				),
@@ -139,8 +148,9 @@ fun VerifyRoomScreen(
 				)
 			) {
 				Text(
-					text = "Verify Room",
-					style = MaterialTheme.typography.titleMedium.copy(fontFamily = KgShadowFontFamily)
+					text = stringResource(id = R.string.verify_room_button_text),
+					style = MaterialTheme.typography.titleMedium
+						.copy(fontFamily = KgShadowFontFamily)
 				)
 			}
 			Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -155,8 +165,9 @@ fun VerifyRoomScreen(
 				shape = MaterialTheme.shapes.medium,
 			) {
 				Text(
-					text = "Don't have a code? Create",
-					style = MaterialTheme.typography.bodyMedium.copy(fontFamily = KgShadowFontFamily)
+					text = stringResource(id = R.string.verify_room_button_secondary_text),
+					style = MaterialTheme.typography.bodyMedium
+						.copy(fontFamily = KgShadowFontFamily)
 				)
 			}
 			Spacer(
@@ -169,8 +180,12 @@ fun VerifyRoomScreen(
 }
 
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
+@Preview(
+	uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
+)
+@Preview(
+	uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL
+)
 @Composable
 fun VerifyRoomScreenPreview() {
 	AndroidTicTacToeTheme {

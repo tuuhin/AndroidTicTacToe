@@ -19,4 +19,24 @@
     <string name="verify_room_dialog_text">Room is verified, you can continue to join the game.</string>
     <string name="game_screen_title">Game Screen</string>
     <string name="cancel_game_dialog_text">Cancelling the game will mark the other user as the winner, if its cancelled before the game is over</string>
+
+    <string name="waiting">Waiting for Opponent</string>
+    <string name="waiting_extra">Opponent has joined the game yet please wait for some seconds</string>
+    <string name="create_room_text_field_supporting_text">The default value for board count is 1</string>
+    <string name="create_room_text_field_label_text">Number of Boards</string>
+    <string name="room_code">"Room Code: "</string>
+    <string name="create_room_button_text">Create Room</string>
+    <string name="create_room_button_secondary_text">Already have a code</string>
+    <string name="create_room_text_field_placeholder">1</string>
+    <string name="wizard_hat_icon_content_desc">Wizard Hat Icon</string>
+    <string name="on_boarding_join_with_code_text">Join via Code</string>
+    <string name="on_boarding_play_now_text">Play Now</string>
+    <string name="person_icon_content_desc">Person\'s Icon</string>
+    <string name="tic_tac_toe_image_content_desc">Tic Tac Toe Image</string>
+    <string name="player_name_field_placeholder">Player</string>
+    <string name="verify_room_button_text">Verify Room</string>
+    <string name="verify_room_button_secondary_text">Don\'t have a code? Create</string>
+    <string name="verify_room_text_field_label">Room Code</string>
+    <string name="handshake_icon_content_desc">Handshake Icon</string>
+
 </resources>

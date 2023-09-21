@@ -17,6 +17,8 @@ sealed class Screens(val route: String) {
 		}
 	)
 
+	object AnonymousGameScreen : Screens(route = "/game")
+
 	data class GameScreenWithRoomId(val roomId: String) : Screens(
 		route = buildString {
 			append("/game?")

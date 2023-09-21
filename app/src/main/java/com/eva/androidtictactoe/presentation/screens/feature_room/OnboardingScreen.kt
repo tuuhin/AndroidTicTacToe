@@ -115,7 +115,7 @@ fun OnBoardingScreen(
 			) {
 				Image(
 					painter = painterResource(id = R.drawable.ic_tic_tac_toe),
-					contentDescription = "Tic Tac Toe Game",
+					contentDescription = stringResource(id = R.string.tic_tac_toe_image_content_desc),
 					colorFilter = ColorFilter
 						.tint(MaterialTheme.colorScheme.onPrimaryContainer),
 					modifier = Modifier.padding(16.dp)
@@ -135,12 +135,13 @@ fun OnBoardingScreen(
 				onValueChange = {
 					onUserNameEvents(UserNameEvents.OnUserNameChange(it))
 				},
-				label = { Text(text = "User Name") },
-				placeholder = { Text(text = "Player1") },
+				placeholder = {
+					Text(text = stringResource(id = R.string.player_name_field_placeholder))
+				},
 				leadingIcon = {
 					Icon(
 						imageVector = Icons.Outlined.Person,
-						contentDescription = "Person's Icon"
+						contentDescription = stringResource(id = R.string.person_icon_content_desc)
 					)
 				},
 				keyboardOptions = KeyboardOptions(
@@ -188,7 +189,7 @@ fun OnBoardingScreen(
 				)
 			) {
 				Text(
-					text = "Play Now",
+					text = stringResource(id = R.string.on_boarding_play_now_text),
 					style = MaterialTheme.typography.titleMedium
 						.copy(fontFamily = KgShadowFontFamily)
 				)
@@ -217,7 +218,7 @@ fun OnBoardingScreen(
 					)
 				) {
 					Text(
-						text = "Create a Room",
+						text = stringResource(id = R.string.create_room_button_text),
 						style = MaterialTheme.typography.bodyLarge
 							.copy(fontFamily = KgShadowFontFamily)
 					)
@@ -243,7 +244,7 @@ fun OnBoardingScreen(
 					)
 				) {
 					Text(
-						text = "Join via Code",
+						text = stringResource(id = R.string.on_boarding_join_with_code_text),
 						style = MaterialTheme.typography.bodyLarge
 							.copy(fontFamily = KgShadowFontFamily)
 					)
@@ -259,8 +260,12 @@ fun OnBoardingScreen(
 }
 
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
+@Preview(
+	uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL
+)
+@Preview(
+	uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
+)
 @Composable
 fun OnBoardingScreenPreview() {
 	AndroidTicTacToeTheme {

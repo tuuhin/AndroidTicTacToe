@@ -1,11 +1,11 @@
 package com.eva.androidtictactoe.presentation.navigation
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -13,7 +13,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.eva.androidtictactoe.domain.model.BoardSymbols
 import com.eva.androidtictactoe.presentation.composables.ArrowBackButton
 import com.eva.androidtictactoe.presentation.screens.feature_game.GameScreen
 import com.eva.androidtictactoe.presentation.screens.feature_game.GameScreenViewModel
@@ -53,10 +52,10 @@ fun AppNavigationGraph(
 				}
 			},
 			onGameScreen = { roomId ->
-				roomId?.let {
-					val destination = Screens.GameScreenWithRoomId(roomId = roomId).route
-					navController.navigate(destination)
-				}
+				val destination =
+					roomId?.let { id -> Screens.GameScreenWithRoomId(roomId = id).route }
+						?: Screens.AnonymousGameScreen.route
+				navController.navigate(destination)
 			}
 		)
 		composable(
@@ -68,31 +67,26 @@ fun AppNavigationGraph(
 				},
 			),
 			enterTransition = {
-				slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up) + expandIn()
+				slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left) +
+						expandIn(expandFrom = Alignment.Center)
 			},
 			exitTransition = {
-				slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down) + shrinkOut()
-			}
-		) { entry ->
-			val roomId = entry.arguments?.getString(ScreenParameters.ROOM_CODE_PARAMS) ?: ""
+				slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left) +
+						shrinkOut(shrinkTowards = Alignment.Center)
+			},
+		) {
 
 			val viewModel = koinViewModel<GameScreenViewModel>()
 
-			val boardState by viewModel.boardState.collectAsStateWithLifecycle()
+			val gameBoard by viewModel.gameEvents.collectAsStateWithLifecycle()
 
-			val backEnable by viewModel.allowBack.collectAsStateWithLifecycle()
-
-			BackHandler(
-				enabled = backEnable,
-				onBack = {}
-			)
+			val serverMessages by viewModel.serverMessages.collectAsStateWithLifecycle()
 
 			GameScreen(
-				roomId = roomId,
 				navigation = { ArrowBackButton(navController = navController) },
-				playerSymbols = BoardSymbols.XSymbol,
-				board = boardState,
-				onBoardPositionSelect = {}
+				board = gameBoard,
+				onEvents = viewModel::onEvent,
+				message = serverMessages,
 			)
 		}
 	}

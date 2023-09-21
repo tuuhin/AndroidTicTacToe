@@ -1,6 +1,5 @@
 package com.eva.androidtictactoe.presentation.screens.feature_room
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eva.androidtictactoe.data.local.UserPreferencesFacade
@@ -32,24 +31,29 @@ class PlayerRoomViewModel(
 	private val preferences: UserPreferencesFacade,
 ) : ViewModel() {
 
-	private val _localName = preferences.playerUserName
-
 	private val _uiEvents = MutableSharedFlow<UiEvents>()
 	val uiEvents = _uiEvents.asSharedFlow()
 
 	private val _createRoomState = MutableStateFlow(CreateRoomState())
 	val createRoomState = _createRoomState.asStateFlow()
 
-	private val _checkRoomState = MutableStateFlow(VerifyRoomState())
-	val checkRoomState = _checkRoomState.asStateFlow()
+	private val _verifyRoomState = MutableStateFlow(VerifyRoomState())
+	val verifyRoomState = _verifyRoomState.asStateFlow()
 
 	private val _userNameState = MutableStateFlow(ChangeUserNameState())
 
-	val userNameState = merge(_userNameState.map { it.name }, _localName).map { name ->
-			ChangeUserNameState(name = name, showDialog = _userNameState.value.showDialog)
-		}.stateIn(
-			viewModelScope, SharingStarted.Eagerly, initialValue = ChangeUserNameState()
-		)
+	private val _uiUserName = _userNameState.map { it.name }
+	private val _localName = preferences.playerNameAsFlow
+
+	// Merges two flow one from the ui state and other from the preference and returns a stateflow
+	// of [ChangeUserNameState] that can be subscribe by the ui state
+	val userNameState = merge(_uiUserName, _localName).map { name ->
+		ChangeUserNameState(name = name, showDialog = _userNameState.value.showDialog)
+	}.stateIn(
+		viewModelScope,
+		SharingStarted.Eagerly,
+		initialValue = ChangeUserNameState()
+	)
 
 	fun onUserNameEvents(event: UserNameEvents) {
 		when (event) {
@@ -57,35 +61,41 @@ class PlayerRoomViewModel(
 				state.copy(name = event.value)
 			}
 
-			UserNameEvents.OnNameChangeConfirm -> saveUserName()
+			UserNameEvents.OnNameChangeConfirm -> saveUserName(_userNameState.value.name)
 			UserNameEvents.ToggleUserNameDialog -> _userNameState.update { state ->
 				state.copy(showDialog = !state.showDialog)
 			}
 		}
 	}
 
-
-	private fun saveUserName() = viewModelScope.launch {
-		preferences.setPlayerUserName(_userNameState.value.name)
+	private fun saveUserName(name: String) = viewModelScope.launch {
+		preferences.setPlayerUserName(name)
 	}
 
 	fun onCheckRoomEvents(event: RoomInteractionEvents) {
 		when (event) {
-			is RoomInteractionEvents.OnValueChange -> _checkRoomState.update { state ->
+			is RoomInteractionEvents.OnValueChange -> _verifyRoomState.update { state ->
 				state.copy(roomId = event.count)
 			}
 
-			RoomInteractionEvents.RoomDataRequest -> onJoinRoom(_checkRoomState.value.roomId)
+			RoomInteractionEvents.RoomDataRequest -> onJoinRoom(_verifyRoomState.value.roomId)
 
-			RoomInteractionEvents.OnDialogToggle -> _checkRoomState.update { state ->
-				state.copy(showDialog = !_checkRoomState.value.showDialog)
+			RoomInteractionEvents.OnDialogToggle -> _verifyRoomState.update { state ->
+				state.copy(showDialog = !_verifyRoomState.value.showDialog)
 			}
 
-			is RoomInteractionEvents.ToggleLoadingState -> _checkRoomState.update { state ->
+			is RoomInteractionEvents.ToggleLoadingState -> _verifyRoomState.update { state ->
 				state.copy(isLoading = event.state)
 			}
 
-			is RoomInteractionEvents.OnDialogConfirm -> {}
+			is RoomInteractionEvents.OnDialogConfirm -> {
+				_verifyRoomState.update { state ->
+					state.copy(showDialog = false, roomId = "", response = null)
+				}
+				viewModelScope.launch {
+					_uiEvents.emit(UiEvents.Navigate(route = event.roomId))
+				}
+			}
 		}
 	}
 
@@ -108,7 +118,7 @@ class PlayerRoomViewModel(
 
 			is RoomInteractionEvents.OnDialogConfirm -> {
 				_createRoomState.update { state -> state.copy(showDialog = false) }
-				_checkRoomState.update { state -> state.copy(roomId = event.roomId) }
+				_verifyRoomState.update { state -> state.copy(roomId = event.roomId) }
 				viewModelScope.launch {
 					_uiEvents.emit(UiEvents.Navigate(route = ApiPaths.JoinRoomPath.route))
 				}
@@ -120,14 +130,18 @@ class PlayerRoomViewModel(
 		playerRepo.createRoom(board).onEach { res ->
 			when (res) {
 				is Resource.Error -> {
-					_createRoomState.update { it.copy(isLoading = false) }
+					_createRoomState.update { state -> state.copy(isLoading = false) }
 					_uiEvents.emit(UiEvents.ShowSnackBar(message = res.message))
 				}
 
-				is Resource.Loading -> _createRoomState.update { it.copy(isLoading = true) }
+				is Resource.Loading -> _createRoomState.update { state -> state.copy(isLoading = true) }
 				is Resource.Success -> {
 					_createRoomState.update { state ->
-						state.copy(isLoading = false, showDialog = true, response = res.data)
+						state.copy(
+							isLoading = false,
+							showDialog = true,
+							response = res.data
+						)
 					}
 				}
 			}
@@ -137,16 +151,15 @@ class PlayerRoomViewModel(
 
 	private fun onJoinRoom(roomId: String) = viewModelScope.launch(Dispatchers.IO) {
 		playerRepo.joinRoom(roomId).onEach { res ->
-			Log.d("RES", res.toString())
 			when (res) {
 				is Resource.Error -> {
-					_checkRoomState.update { it.copy(isLoading = false) }
+					_verifyRoomState.update { state -> state.copy(isLoading = false) }
 					_uiEvents.emit(UiEvents.ShowSnackBar(message = res.message))
 				}
 
-				is Resource.Loading -> _checkRoomState.update { it.copy(isLoading = true) }
+				is Resource.Loading -> _verifyRoomState.update { state -> state.copy(isLoading = true) }
 				is Resource.Success -> {
-					_checkRoomState.update { state ->
+					_verifyRoomState.update { state ->
 						state.copy(
 							isLoading = false,
 							showDialog = true,
