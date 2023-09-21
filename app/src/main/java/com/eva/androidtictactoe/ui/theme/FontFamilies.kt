@@ -17,3 +17,7 @@ val HugwaFontFamily = FontFamily(
 val KgShadowFontFamily = FontFamily(
 	Font(R.font.kg_shadow, weight = FontWeight.Medium)
 )
+
+val IsoMetricFontFamily = FontFamily(
+	Font(R.font.isometric, weight = FontWeight.Medium)
+)

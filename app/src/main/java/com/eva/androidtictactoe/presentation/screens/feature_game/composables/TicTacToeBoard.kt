@@ -1,7 +1,6 @@
 package com.eva.androidtictactoe.presentation.screens.feature_game.composables
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
@@ -35,7 +33,6 @@ import com.eva.androidtictactoe.domain.model.BoardPosition
 import com.eva.androidtictactoe.domain.model.GameSymbols
 import com.eva.androidtictactoe.domain.model.TicTacToeBoardFace
 import com.eva.androidtictactoe.domain.model.TicTacToeBoardModel
-import com.eva.androidtictactoe.presentation.screens.feature_game.util.asPretty
 import com.eva.androidtictactoe.presentation.utils.FakePreview
 import com.eva.androidtictactoe.ui.theme.AndroidTicTacToeTheme
 import com.eva.androidtictactoe.ui.theme.OutlineFontFamily
@@ -59,15 +56,11 @@ fun TicTacToeBoard(
 
 	val textMeasurer = rememberTextMeasurer()
 
-	SideEffect {
-		Log.d("BOARD", board.asPretty())
-	}
-
 	Box(
 		modifier = modifier
 			.aspectRatio(1f)
 			.clip(MaterialTheme.shapes.large)
-			.background(color = boardColor, shape = MaterialTheme.shapes.large)
+			.background(color = boardColor)
 			.border(2.dp, frameColor, MaterialTheme.shapes.large)
 	) {
 		Canvas(
