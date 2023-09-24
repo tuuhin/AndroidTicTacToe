@@ -2,17 +2,18 @@ package com.eva.androidtictactoe.data.repository
 
 import com.eva.androidtictactoe.data.mapper.toDto
 import com.eva.androidtictactoe.data.mapper.toModel
-import com.eva.androidtictactoe.data.remote.dto.SendEventsDto
 import com.eva.androidtictactoe.data.remote.dto.SendGameDataDto
 import com.eva.androidtictactoe.domain.facade.BoardGameApiFacade
 import com.eva.androidtictactoe.domain.model.BoardGameModel
 import com.eva.androidtictactoe.domain.model.BoardPosition
+import com.eva.androidtictactoe.domain.model.GameAchievementModel
 import com.eva.androidtictactoe.domain.repository.GameRepository
 import io.ktor.client.plugins.websocket.WebSocketException
 import io.ktor.util.generateNonce
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -37,9 +38,13 @@ class BoardGameRepositoryImpl(
 	override val serverMessage: StateFlow<String>
 		get() = gameFacade.serverMessage
 
+	override val gameAchievements: Flow<GameAchievementModel>
+		get() = gameFacade.gameAchievementData.map { it.toModel() }
+
 
 	private val _connectionEvents = MutableSharedFlow<String>()
-	override val connectionEvents: MutableSharedFlow<String>
+
+	override val connectionEvents: SharedFlow<String>
 		get() = _connectionEvents
 
 	override suspend fun connectWithRoomId(room: String, userName: String?) {
@@ -98,11 +103,9 @@ class BoardGameRepositoryImpl(
 
 	override suspend fun sendBoardData(position: BoardPosition) {
 		return withContext(Dispatchers.IO) {
-			val sendDto = SendEventsDto.SendGameData(
-				data = SendGameDataDto(
-					positionDto = position.toDto(),
-					clientId = clientId
-				)
+			val sendDto = SendGameDataDto(
+				positionDto = position.toDto(),
+				clientId = clientId
 			)
 			try {
 				gameFacade.onSend(sendDto)

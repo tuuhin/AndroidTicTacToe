@@ -2,8 +2,9 @@ package com.eva.androidtictactoe.domain.repository
 
 import com.eva.androidtictactoe.domain.model.BoardGameModel
 import com.eva.androidtictactoe.domain.model.BoardPosition
+import com.eva.androidtictactoe.domain.model.GameAchievementModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
 interface GameRepository {
@@ -12,9 +13,11 @@ interface GameRepository {
 
 	val serverMessage: StateFlow<String>
 
-	val connectionEvents: MutableSharedFlow<String>
+	val connectionEvents: SharedFlow<String>
 
 	val gameBoard: Flow<BoardGameModel>
+
+	val gameAchievements: Flow<GameAchievementModel>
 
 	suspend fun onDisConnect(): Boolean
 

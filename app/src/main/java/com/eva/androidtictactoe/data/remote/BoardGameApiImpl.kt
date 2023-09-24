@@ -2,8 +2,9 @@ package com.eva.androidtictactoe.data.remote
 
 import com.eva.androidtictactoe.BuildConfig
 import com.eva.androidtictactoe.data.remote.dto.BoardGameRoomDataDto
+import com.eva.androidtictactoe.data.remote.dto.GameAchievementDto
 import com.eva.androidtictactoe.data.remote.dto.ReceiveEventsDto
-import com.eva.androidtictactoe.data.remote.dto.SendEventsDto
+import com.eva.androidtictactoe.data.remote.dto.SendGameDataDto
 import com.eva.androidtictactoe.domain.facade.BoardGameApiFacade
 import com.eva.androidtictactoe.utils.ApiPaths
 import io.ktor.client.HttpClient
@@ -17,6 +18,7 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.Json
@@ -34,6 +36,12 @@ class BoardGameApiImpl(
 	private val _boardGame = MutableStateFlow(value = BoardGameRoomDataDto())
 	override val boardGameData: MutableStateFlow<BoardGameRoomDataDto>
 		get() = _boardGame
+
+
+	private val _achievements = MutableSharedFlow<GameAchievementDto>()
+	override val gameAchievementData: MutableSharedFlow<GameAchievementDto>
+		get() = _achievements
+
 
 	override suspend fun onConnect(
 		clientId: String,
@@ -115,12 +123,15 @@ class BoardGameApiImpl(
 					is ReceiveEventsDto.ReceivedGameData -> _boardGame.update { data.state }
 
 					is ReceiveEventsDto.ReceivedMessage -> _serverMessages.update { data.message }
+
+					is ReceiveEventsDto.GameAchievementState -> _achievements.emit(data.result)
+
 				}
 			}
 		}
 	} ?: Unit
 
 
-	override suspend fun onSend(event: SendEventsDto) =
+	override suspend fun onSend(event: SendGameDataDto) =
 		_webSocketSession?.sendSerialized(event) ?: Unit
 }

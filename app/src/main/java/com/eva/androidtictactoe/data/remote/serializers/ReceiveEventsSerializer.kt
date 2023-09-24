@@ -14,6 +14,7 @@ object ReceiveEventsSerializer :
 		return when (element.jsonObject["type"]?.jsonPrimitive?.content) {
 			ReceiveEventsTypes.MESSAGE_TYPE.type -> ReceiveEventsDto.ReceivedMessage.serializer()
 			ReceiveEventsTypes.GAME_STATE_TYPE.type -> ReceiveEventsDto.ReceivedGameData.serializer()
+			ReceiveEventsTypes.ACHIEVEMENT_TYPE.type -> ReceiveEventsDto.GameAchievementState.serializer()
 			else -> throw Exception("Unknown key 'type' not found")
 		}
 	}

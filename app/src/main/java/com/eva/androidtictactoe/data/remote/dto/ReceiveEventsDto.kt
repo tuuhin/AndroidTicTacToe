@@ -17,4 +17,10 @@ sealed interface ReceiveEventsDto {
 		@SerialName("type") val type: String = ReceiveEventsTypes.GAME_STATE_TYPE.type,
 		@SerialName("result") val state: BoardGameRoomDataDto
 	) : ReceiveEventsDto
+
+	@Serializable
+	data class GameAchievementState(
+		@SerialName("type") val type: String = ReceiveEventsTypes.ACHIEVEMENT_TYPE.type,
+		@SerialName("result") val result: GameAchievementDto
+	) : ReceiveEventsDto
 }
