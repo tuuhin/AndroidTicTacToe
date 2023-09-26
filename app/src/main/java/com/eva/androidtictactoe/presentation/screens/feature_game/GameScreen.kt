@@ -23,12 +23,12 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import com.eva.androidtictactoe.R
 import com.eva.androidtictactoe.domain.model.BoardGameModel
+import com.eva.androidtictactoe.domain.model.BoardPosition
 import com.eva.androidtictactoe.presentation.screens.feature_game.composables.BoardGameWrapper
 import com.eva.androidtictactoe.presentation.screens.feature_game.composables.GameInfoHeader
 import com.eva.androidtictactoe.presentation.screens.feature_game.composables.ServerMessageBox
 import com.eva.androidtictactoe.presentation.screens.feature_game.composables.TicTacToeBoard
 import com.eva.androidtictactoe.presentation.screens.feature_game.composables.WaitingForPlayer
-import com.eva.androidtictactoe.presentation.screens.feature_game.util.GameScreenEvents
 import com.eva.androidtictactoe.presentation.utils.FakePreview
 import com.eva.androidtictactoe.ui.theme.AndroidTicTacToeTheme
 import com.eva.androidtictactoe.ui.theme.HugwaFontFamily
@@ -38,7 +38,7 @@ import com.eva.androidtictactoe.ui.theme.HugwaFontFamily
 fun GameScreen(
 	message: String,
 	board: BoardGameModel,
-	onEvents: (GameScreenEvents) -> Unit,
+	onBoardPositions: (BoardPosition) -> Unit,
 	modifier: Modifier = Modifier,
 	navigation: (@Composable () -> Unit)? = null,
 ) {
@@ -81,7 +81,7 @@ fun GameScreen(
 					}
 					Spacer(modifier = Modifier.height(20.dp))
 					TicTacToeBoard(
-						onTap = { pos -> onEvents(GameScreenEvents.OnBoardPositionSelect(pos)) },
+						onTap = onBoardPositions,
 						playerSymbols = board.player.symbol,
 						board = board.game.board.boardFace,
 						modifier = Modifier
@@ -124,9 +124,9 @@ fun GameScreenPreview(
 ) {
 	AndroidTicTacToeTheme {
 		GameScreen(
-			onEvents = {},
+			onBoardPositions = {},
 			board = board,
-			message = "Secret message"
+			message = "Secret message",
 		)
 	}
 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.eva.androidtictactoe.R
+import com.eva.androidtictactoe.presentation.screens.feature_game.GameBackHandlerEvents
 import com.eva.androidtictactoe.ui.theme.AndroidTicTacToeTheme
 import com.eva.androidtictactoe.ui.theme.KgShadowFontFamily
 
@@ -32,7 +33,7 @@ fun CancelGameDialog(
 						contentColor = MaterialTheme.colorScheme.secondary
 					)
 				) {
-					Text(text = "Cancel")
+					Text(text = stringResource(id = R.string.cancel_dialog_dismiss_button_text))
 				}
 			}
 		},
@@ -53,7 +54,7 @@ fun CancelGameDialog(
 		},
 		title = {
 			Text(
-				text = "Cancel the game",
+				text = stringResource(id = R.string.cancel_gama_dialog_title),
 				style = MaterialTheme.typography.titleLarge
 			)
 		},
@@ -66,6 +67,20 @@ fun CancelGameDialog(
 		textContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
 		titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
 		shape = MaterialTheme.shapes.large,
+		modifier = modifier
+	)
+}
+
+
+@Composable
+fun CancelGameDialog(
+	onBackEvents: (GameBackHandlerEvents) -> Unit,
+	modifier: Modifier = Modifier,
+) {
+	CancelGameDialog(
+		onDismiss = { onBackEvents(GameBackHandlerEvents.ToggleCancelGameDialog) },
+		onCancel = { onBackEvents(GameBackHandlerEvents.ToggleCancelGameDialog) },
+		onConfirm = { onBackEvents(GameBackHandlerEvents.CancelGame) },
 		modifier = modifier
 	)
 }

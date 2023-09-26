@@ -19,3 +19,16 @@ enum class GameSymbols(val symbol: Char) {
 		return this.symbol.toString()
 	}
 }
+
+fun TicTacToeBoardFace.asPretty(): String {
+	val builder = buildString {
+		this@asPretty.forEach { boardRow ->
+			boardRow.forEach { item ->
+				append(" | ${item.symbol}")
+			}
+			append("|")
+			append("\n--------------\n")
+		}
+	}
+	return builder
+}

@@ -4,23 +4,17 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.eva.androidtictactoe.presentation.composables.ArrowBackButton
-import com.eva.androidtictactoe.presentation.screens.feature_game.GameScreen
-import com.eva.androidtictactoe.presentation.screens.feature_game.GameScreenViewModel
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AppNavigationGraph(
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
 ) {
 	val navController = rememberNavController()
 
@@ -56,7 +50,7 @@ fun AppNavigationGraph(
 					roomId?.let { id -> Screens.GameScreenWithRoomId(roomId = id).route }
 						?: Screens.AnonymousGameScreen.route
 				navController.navigate(destination)
-			}
+			},
 		)
 		composable(
 			route = Screens.GameScreenWithParam.route,
@@ -74,19 +68,10 @@ fun AppNavigationGraph(
 				slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left) +
 						shrinkOut(shrinkTowards = Alignment.Center)
 			},
-		) {
-
-			val viewModel = koinViewModel<GameScreenViewModel>()
-
-			val gameBoard by viewModel.gameEvents.collectAsStateWithLifecycle()
-
-			val serverMessages by viewModel.serverMessages.collectAsStateWithLifecycle()
-
-			GameScreen(
-				navigation = { ArrowBackButton(navController = navController) },
-				board = gameBoard,
-				onEvents = viewModel::onEvent,
-				message = serverMessages,
+		) { entry ->
+			GameRoute(
+				navController = navController,
+				entry = entry,
 			)
 		}
 	}

@@ -1,6 +1,7 @@
 package com.eva.androidtictactoe.presentation.utils
 
 import com.eva.androidtictactoe.domain.model.BoardGameModel
+import com.eva.androidtictactoe.domain.model.GameAchievementModel
 import com.eva.androidtictactoe.domain.model.GamePlayerModel
 import com.eva.androidtictactoe.domain.model.GameRoomModel
 import com.eva.androidtictactoe.domain.model.GameSymbols
@@ -48,5 +49,12 @@ object FakePreview {
 		isReady = true,
 		player = FAKE_GAME_PLAYER_MODEL.copy(userName = "One", symbol = GameSymbols.XSymbol),
 		opponent = FAKE_GAME_PLAYER_MODEL
+	)
+
+	val FAKE_ACHIEVEMENT_MODEL = GameAchievementModel(
+		text = "The boards are over",
+		winnerName = "Anonymous",
+		winnerSymbols = GameSymbols.XSymbol,
+		secondaryText = "The user anonymous have won the game by 2 points"
 	)
 }
