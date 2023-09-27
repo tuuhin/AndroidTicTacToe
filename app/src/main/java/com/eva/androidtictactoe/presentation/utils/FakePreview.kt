@@ -51,10 +51,16 @@ object FakePreview {
 		opponent = FAKE_GAME_PLAYER_MODEL
 	)
 
-	val FAKE_ACHIEVEMENT_MODEL = GameAchievementModel(
-		text = "The boards are over",
+	val FAKE_ACHIEVEMENT_MODEL_WITH_WINNER = GameAchievementModel(
+		text = "Won by X",
 		winnerName = "Anonymous",
 		winnerSymbols = GameSymbols.XSymbol,
 		secondaryText = "The user anonymous have won the game by 2 points"
+	)
+
+	val FAKE_ACHIEVEMENT_MODEL_WITH_DRAW = GameAchievementModel(
+		text = "Its a draw",
+		isDraw = true,
+		secondaryText = "Both users have same points thus its a draw"
 	)
 }

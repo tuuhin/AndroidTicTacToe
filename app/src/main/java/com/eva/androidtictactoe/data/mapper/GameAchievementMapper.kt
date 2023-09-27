@@ -7,5 +7,6 @@ fun GameAchievementDto.toModel() = GameAchievementModel(
 	text = text,
 	winnerSymbols = winnerSymbols,
 	secondaryText = secondaryText,
-	winnerName = winnerName
+	winnerName = winnerName,
+	isDraw = isDraw
 )

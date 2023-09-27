@@ -17,8 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.eva.androidtictactoe.R
 import com.eva.androidtictactoe.domain.model.GamePlayerModel
 import com.eva.androidtictactoe.domain.model.GameSymbols
 import com.eva.androidtictactoe.presentation.utils.FakePreview
@@ -32,8 +34,13 @@ fun GameInfoHeader(
 	boardCount: Int,
 	modifier: Modifier = Modifier,
 ) {
-	val roundRatio by remember {
-		derivedStateOf { "$roundNumber/$boardCount" }
+	val roundRatio by remember(roundNumber) {
+		derivedStateOf {
+			if (boardCount != 0)
+				"$roundNumber/$boardCount"
+			else
+				""
+		}
 	}
 
 	Row(
@@ -42,7 +49,7 @@ fun GameInfoHeader(
 		verticalAlignment = Alignment.CenterVertically,
 	) {
 		GamePlayerProfile(
-			mode = "Player",
+			mode = stringResource(id = R.string.player_profile_text),
 			player = player,
 			modifier = Modifier
 				.padding(vertical = 2.dp),
@@ -62,7 +69,7 @@ fun GameInfoHeader(
 				modifier = Modifier.padding(16.dp)
 			) {
 				Text(
-					text = "Round",
+					text = stringResource(id = R.string.game_round_heading),
 					style = MaterialTheme.typography.titleMedium,
 					modifier = Modifier
 						.align(Alignment.CenterHorizontally),
@@ -76,7 +83,7 @@ fun GameInfoHeader(
 			}
 		}
 		GamePlayerProfile(
-			mode = "Opponent",
+			mode = stringResource(id = R.string.opponent_profile_text),
 			player = opponent,
 			modifier = Modifier.padding(vertical = 2.dp),
 			containerColor = MaterialTheme.colorScheme.secondaryContainer,

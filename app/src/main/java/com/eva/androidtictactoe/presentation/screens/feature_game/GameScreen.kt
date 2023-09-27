@@ -48,47 +48,44 @@ fun GameScreen(
 				title = {
 					Text(
 						text = stringResource(id = R.string.game_screen_title),
-						style = MaterialTheme.typography.titleLarge
-							.copy(fontFamily = HugwaFontFamily)
+						fontFamily = HugwaFontFamily
 					)
 				},
 				navigationIcon = navigation ?: {},
 				colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-					titleContentColor = MaterialTheme.colorScheme.inverseSurface,
-					containerColor = MaterialTheme.colorScheme.inverseOnSurface
+					titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+					containerColor = MaterialTheme.colorScheme.surfaceVariant
 				)
 			)
 		}
 	) { scPadding ->
 		BoardGameWrapper(
 			board = board,
-			waiting = {
+			onWaiting = {
 				WaitingForPlayer(
 					modifier = Modifier.fillMaxSize()
 				)
 			},
-			game = {
+			showBoard = { player, opponent ->
 				Spacer(modifier = Modifier.height(20.dp))
-				board.player?.let player@{ player ->
-					board.opponent?.let opponent@{ opponent ->
-						GameInfoHeader(
-							player = player,
-							opponent = opponent,
-							boardCount = board.game.boardCount,
-							roundNumber = board.game.currentBoardNumber,
-							modifier = Modifier.fillMaxWidth()
-						)
-					}
-					Spacer(modifier = Modifier.height(20.dp))
-					TicTacToeBoard(
-						onTap = onBoardPositions,
-						playerSymbols = board.player.symbol,
-						board = board.game.board.boardFace,
-						modifier = Modifier
-							.fillMaxWidth(.75f)
-							.align(Alignment.CenterHorizontally)
-					)
-				}
+				GameInfoHeader(
+					player = player,
+					opponent = opponent,
+					boardCount = board.game.boardCount,
+					roundNumber = board.game.currentBoardNumber,
+					modifier = Modifier.fillMaxWidth()
+				)
+
+				Spacer(modifier = Modifier.height(20.dp))
+				TicTacToeBoard(
+					onTap = onBoardPositions,
+					playerSymbols = player.symbol,
+					board = board.game.board.boardFace,
+					modifier = Modifier
+						.fillMaxWidth(.75f)
+						.align(Alignment.CenterHorizontally)
+				)
+
 				Spacer(modifier = Modifier.height(20.dp))
 				ServerMessageBox(
 					messages = message,

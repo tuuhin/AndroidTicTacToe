@@ -46,7 +46,7 @@ fun CancelGameDialog(
 				)
 			) {
 				Text(
-					text = "Quit",
+					text = stringResource(id = R.string.cancel_dialog_confirm_button_text),
 					style = MaterialTheme.typography.bodyMedium
 						.copy(fontFamily = KgShadowFontFamily)
 				)

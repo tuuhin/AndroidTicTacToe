@@ -12,7 +12,7 @@ data class GameRoomDto(
 	val boardCount: Int = 1,
 
 	@SerialName("current_board")
-	val currentBoard: Int = 0,
+	val currentBoard: Int = 1,
 
 	@SerialName("board_layout")
 	val boardLayout: List<List<Char>> = emptyBoardLayout(),

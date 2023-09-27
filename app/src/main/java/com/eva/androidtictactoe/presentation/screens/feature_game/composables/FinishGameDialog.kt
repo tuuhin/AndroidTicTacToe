@@ -3,14 +3,11 @@ package com.eva.androidtictactoe.presentation.screens.feature_game.composables
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,9 +18,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.eva.androidtictactoe.R
 import com.eva.androidtictactoe.domain.model.GameAchievementModel
@@ -31,7 +30,6 @@ import com.eva.androidtictactoe.presentation.screens.feature_game.GameAchievemen
 import com.eva.androidtictactoe.presentation.screens.feature_game.GameAchievementState
 import com.eva.androidtictactoe.presentation.utils.FakePreview
 import com.eva.androidtictactoe.ui.theme.AndroidTicTacToeTheme
-import com.eva.androidtictactoe.ui.theme.IsoMetricFontFamily
 import com.eva.androidtictactoe.ui.theme.KgShadowFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,55 +60,25 @@ fun FinishGameDialog(
 					color = MaterialTheme.colorScheme.onPrimaryContainer
 				)
 				Spacer(modifier = Modifier.height(8.dp))
-				Row(
-					modifier = Modifier
-						.fillMaxWidth()
-						.wrapContentHeight()
-						.clip(MaterialTheme.shapes.large)
-						.background(MaterialTheme.colorScheme.secondaryContainer),
-					verticalAlignment = Alignment.CenterVertically,
-					horizontalArrangement = Arrangement.spacedBy(8.dp)
-				) {
-					Box(
-						modifier = Modifier
-							.padding(8.dp)
-							.clip(MaterialTheme.shapes.medium)
-							.background(MaterialTheme.colorScheme.tertiaryContainer)
-					) {
-						Text(
-							text = "${model.winnerSymbols.symbol}",
-							style = MaterialTheme.typography.displayMedium
-								.copy(fontFamily = IsoMetricFontFamily),
-							color = MaterialTheme.colorScheme.onTertiaryContainer,
-							modifier = Modifier.padding(4.dp)
-						)
-					}
-					model.winnerName?.let { name ->
-						Column {
-							Text(
-								text = stringResource(id = R.string.winner),
-								style = MaterialTheme.typography.bodyLarge,
-								color = MaterialTheme.colorScheme.onSecondaryContainer
-							)
-							Text(
-								text = name,
-								style = MaterialTheme.typography.titleMedium,
-								color = MaterialTheme.colorScheme.onSurface
-							)
-						}
-					}
-				}
+				GameAchievementCard(
+					model = model,
+					modifier = Modifier.fillMaxWidth(),
+				)
 				Spacer(modifier = Modifier.height(4.dp))
 				Text(
 					text = model.text,
-					style = MaterialTheme.typography.bodySmall,
-					color = MaterialTheme.colorScheme.secondary
+					style = MaterialTheme.typography.bodyMedium,
+					color = MaterialTheme.colorScheme.onPrimaryContainer,
+					modifier = Modifier.align(Alignment.CenterHorizontally),
+					textAlign = TextAlign.Center,
 				)
 				model.secondaryText?.let { text ->
 					Text(
 						text = text,
 						style = MaterialTheme.typography.labelSmall,
-						color = MaterialTheme.colorScheme.onSecondaryContainer
+						color = MaterialTheme.colorScheme.onSecondaryContainer,
+						modifier = Modifier.align(Alignment.CenterHorizontally),
+						textAlign = TextAlign.Center,
 					)
 				}
 				Spacer(modifier = Modifier.height(4.dp))
@@ -131,6 +99,7 @@ fun FinishGameDialog(
 	}
 }
 
+
 @Composable
 fun FinishGameDialog(
 	state: GameAchievementState,
@@ -146,6 +115,13 @@ fun FinishGameDialog(
 	}
 }
 
+class GameAchievementPreviewParams : CollectionPreviewParameterProvider<GameAchievementModel>(
+	listOf(
+		FakePreview.FAKE_ACHIEVEMENT_MODEL_WITH_WINNER,
+		FakePreview.FAKE_ACHIEVEMENT_MODEL_WITH_DRAW
+	)
+)
+
 
 @Preview(
 	uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
@@ -154,11 +130,14 @@ fun FinishGameDialog(
 	uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
 )
 @Composable
-fun FinishedGameDialogPreview() {
-	AndroidTicTacToeTheme {
-		FinishGameDialog(
-			model = FakePreview.FAKE_ACHIEVEMENT_MODEL,
-			onConfirm = {}
-		)
-	}
+fun FinishedGameDialogPreview(
+
+	@PreviewParameter(GameAchievementPreviewParams::class)
+	model: GameAchievementModel,
+
+	) = AndroidTicTacToeTheme {
+	FinishGameDialog(
+		model = model,
+		onConfirm = {},
+	)
 }

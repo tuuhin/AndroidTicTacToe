@@ -14,8 +14,11 @@ data class GameAchievementDto(
 	val secondaryText: String? = null,
 
 	@SerialName("winner_symbol")
-	val winnerSymbols: GameSymbols,
+	val winnerSymbols: GameSymbols? = null,
 
 	@SerialName("winner_name")
-	val winnerName: String? = null
+	val winnerName: String? = null,
+
+	@SerialName("is_draw")
+	val isDraw: Boolean = false,
 )

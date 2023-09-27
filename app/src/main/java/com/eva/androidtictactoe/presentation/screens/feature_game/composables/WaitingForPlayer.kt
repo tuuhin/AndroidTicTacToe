@@ -58,7 +58,7 @@ fun WaitingForPlayer(
 	) {
 		Image(
 			painter = painterResource(id = R.drawable.ic_waiting),
-			contentDescription = "Waiting for other",
+			contentDescription = stringResource(id = R.string.wating_icon_desc),
 			colorFilter = ColorFilter
 				.tint(MaterialTheme.colorScheme.onPrimaryContainer),
 			modifier = Modifier

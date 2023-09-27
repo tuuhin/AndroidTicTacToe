@@ -10,10 +10,12 @@ import com.eva.androidtictactoe.domain.model.BoardPosition
 import com.eva.androidtictactoe.domain.repository.GameRepository
 import com.eva.androidtictactoe.presentation.navigation.ScreenParameters.ROOM_CODE_PARAMS
 import com.eva.androidtictactoe.presentation.utils.UiEvents
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class GameScreenViewModel(
 	private val gameRepository: GameRepository,
@@ -52,6 +55,10 @@ class GameScreenViewModel(
 	private val _backHandlerState = MutableStateFlow(GameBackHandlerState())
 	val backHandlerState = _backHandlerState.asStateFlow()
 
+
+	private val _quitGame = MutableSharedFlow<UiEvents.Navigate>()
+	val quitGame = _quitGame.asSharedFlow()
+
 	init {
 
 		viewModelScope.launch {
@@ -80,7 +87,9 @@ class GameScreenViewModel(
 
 	fun onAchievementEvents(event: GameAchievementEvents) {
 		when (event) {
-			GameAchievementEvents.AcceptQuitGameDialog -> {}
+			GameAchievementEvents.AcceptQuitGameDialog -> viewModelScope.launch {
+				_quitGame.emit(UiEvents.Navigate())
+			}
 		}
 	}
 
@@ -90,7 +99,10 @@ class GameScreenViewModel(
 				state.copy(showOnBackDialog = true)
 			}
 
-			GameBackHandlerEvents.CancelGame -> {}
+			GameBackHandlerEvents.CancelGame -> viewModelScope.launch {
+				_backHandlerState.update { state -> state.copy(showOnBackDialog = false) }
+				_quitGame.emit(UiEvents.Navigate())
+			}
 
 			GameBackHandlerEvents.ToggleCancelGameDialog -> _backHandlerState.update { state ->
 				state.copy(showOnBackDialog = !state.showOnBackDialog)
@@ -103,9 +115,10 @@ class GameScreenViewModel(
 	}
 
 	override fun onCleared() {
-		viewModelScope.launch {
+		// The socket needs to disconnected this using run blocking here
+		runBlocking {
 			gameRepository.onDisConnect()
-			Log.d(gameTag, "DISCONNECT RESULT")
+			Log.d(gameTag, "DISCONNECTING THE GAME SOCKET CONNECTION")
 		}
 		super.onCleared()
 	}

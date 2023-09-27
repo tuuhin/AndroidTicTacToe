@@ -8,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.eva.androidtictactoe.presentation.composables.ArrowBackButton
 import com.eva.androidtictactoe.presentation.screens.feature_game.GameBackHandlerEvents
 import com.eva.androidtictactoe.presentation.screens.feature_game.GameScreen
 import com.eva.androidtictactoe.presentation.screens.feature_game.GameScreenViewModel
@@ -38,8 +37,14 @@ fun GameRoute(
 		viewModel.connectionEventsError.collect { events ->
 			when (events) {
 				is UiEvents.ShowSnackBar -> snackBarHostState.showSnackbar(events.message)
-				is UiEvents.Navigate -> {}
+				else -> {}
 			}
+		}
+	}
+
+	LaunchedEffect(entry) {
+		viewModel.quitGame.collect {
+			navController.popBackStack()
 		}
 	}
 
@@ -62,7 +67,6 @@ fun GameRoute(
 	)
 
 	GameScreen(
-		navigation = { ArrowBackButton(navController = navController) },
 		board = gameBoard,
 		onBoardPositions = viewModel::onPositionSelect,
 		message = serverMessages,
