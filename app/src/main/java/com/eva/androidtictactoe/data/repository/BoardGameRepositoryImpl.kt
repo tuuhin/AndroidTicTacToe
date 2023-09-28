@@ -90,15 +90,14 @@ class BoardGameRepositoryImpl(
 	}
 
 
-	override suspend fun onDisConnect(): Boolean = try {
-		gameFacade.onDisconnect()
-		true
-	} catch (e: WebSocketException) {
-		e.printStackTrace()
-		false
-	} catch (e: Exception) {
-		e.printStackTrace()
-		false
+	override suspend fun onDisConnect(): Boolean {
+		return try {
+			gameFacade.onDisconnect()
+			true
+		} catch (e: Exception) {
+			e.printStackTrace()
+			false
+		}
 	}
 
 	override suspend fun sendBoardData(position: BoardPosition) {

@@ -14,13 +14,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,12 +29,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -46,6 +42,8 @@ import com.eva.androidtictactoe.presentation.screens.feature_room.utils.RoomInte
 import com.eva.androidtictactoe.presentation.utils.FakePreview
 import com.eva.androidtictactoe.presentation.utils.LocalSnackBarHostState
 import com.eva.androidtictactoe.ui.theme.AndroidTicTacToeTheme
+import com.eva.androidtictactoe.ui.theme.HugwaFontFamily
+import com.eva.androidtictactoe.ui.theme.KgShadowFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,14 +58,23 @@ fun CreateRoomScreen(
 	if (createRoomState.showDialog) {
 		RoomCreateDialog(
 			responseModel = createRoomState.response,
-			onConfirm = { roomId -> onCreateRoomEvents(RoomInteractionEvents.OnDialogConfirm(roomId)) },
-			onDismiss = { onCreateRoomEvents(RoomInteractionEvents.OnDialogToggle) }
+			onConfirm = { roomId ->
+				onCreateRoomEvents(RoomInteractionEvents.OnDialogConfirm(roomId))
+			},
+			onDismiss = {
+				onCreateRoomEvents(RoomInteractionEvents.OnDialogToggle)
+			}
 		)
 	}
 	Scaffold(
 		topBar = {
 			CenterAlignedTopAppBar(
-				title = { Text(text = stringResource(id = R.string.create_room_route_title)) },
+				title = {
+					Text(
+						text = stringResource(id = R.string.create_room_route_title),
+						fontFamily = HugwaFontFamily
+					)
+				},
 				navigationIcon = navigation ?: {},
 				colors = TopAppBarDefaults
 					.centerAlignedTopAppBarColors(
@@ -88,8 +95,9 @@ fun CreateRoomScreen(
 			Spacer(modifier = Modifier.weight(.5f))
 			Image(
 				painter = painterResource(id = R.drawable.ic_wizard_hat),
-				contentDescription = "Handshake Icon",
-				colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimaryContainer),
+				contentDescription = stringResource(id = R.string.wizard_hat_icon_content_desc),
+				colorFilter = ColorFilter
+					.tint(color = MaterialTheme.colorScheme.onPrimaryContainer),
 				modifier = Modifier.padding(vertical = 10.dp)
 			)
 			Spacer(modifier = Modifier.height(20.dp))
@@ -99,13 +107,26 @@ fun CreateRoomScreen(
 				onValueChange = { newCount ->
 					onCreateRoomEvents(RoomInteractionEvents.OnValueChange(newCount))
 				},
-				label = { Text(text = "Number of Boards") },
-				placeholder = { Text(text = "1") },
+				label = {
+					Text(
+						text = stringResource(id = R.string.create_room_text_field_label_text)
+					)
+				},
+				placeholder = {
+					Text(
+						text = stringResource(id = R.string.create_room_text_field_placeholder)
+					)
+				},
 				keyboardOptions = KeyboardOptions(
 					autoCorrect = false,
 					keyboardType = KeyboardType.Number
 				),
-				supportingText = { Text(text = "The default value for board count is 1") },
+				supportingText = {
+					Text(
+						text = stringResource(id = R.string.create_room_text_field_supporting_text),
+						color = MaterialTheme.colorScheme.outline
+					)
+				},
 				maxLines = 1,
 				singleLine = true,
 				modifier = Modifier.fillMaxWidth(),
@@ -133,44 +154,46 @@ fun CreateRoomScreen(
 					.fillMaxWidth()
 					.sizeIn(minHeight = dimensionResource(id = R.dimen.button_height)),
 				shape = MaterialTheme.shapes.medium,
-				enabled = !createRoomState.isLoading
+				enabled = !createRoomState.isLoading,
+				colors = ButtonDefaults.buttonColors(
+					containerColor = MaterialTheme.colorScheme.primary,
+					contentColor = MaterialTheme.colorScheme.onPrimary
+				)
 			) {
 				Text(
-					text = "Create Room",
-					style = MaterialTheme.typography.bodyLarge
+					text = stringResource(id = R.string.create_room_button_text),
+					style = MaterialTheme.typography.titleMedium
+						.copy(fontFamily = KgShadowFontFamily)
 				)
 			}
 			Spacer(modifier = Modifier.padding(vertical = 4.dp))
-			TextButton(
+			FilledTonalButton(
 				onClick = onJoinRedirect,
-				colors = ButtonDefaults.textButtonColors(
+				colors = ButtonDefaults.filledTonalButtonColors(
 					contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-				)
+				),
+				modifier = Modifier
+					.fillMaxWidth()
+					.sizeIn(minHeight = dimensionResource(id = R.dimen.button_height)),
+				shape = MaterialTheme.shapes.medium,
 			) {
 				Text(
-					text = buildAnnotatedString {
-						withStyle(
-							style = SpanStyle(
-								fontSize = MaterialTheme.typography.bodySmall.fontSize,
-								color = MaterialTheme.colorScheme.onSurfaceVariant
-							)
-						) { append("Already have a code") }
-						withStyle(
-							style = SpanStyle(
-								textDecoration = TextDecoration.Underline,
-								color = MaterialTheme.colorScheme.secondary,
-								fontSize = MaterialTheme.typography.bodyMedium.fontSize
-							)
-						) { append("Join") }
-					}
+					text = stringResource(id = R.string.create_room_button_secondary_text),
+					style = MaterialTheme.typography.bodyMedium
+						.copy(fontFamily = KgShadowFontFamily)
 				)
 			}
+			Spacer(
+				modifier = Modifier.height(
+					height = dimensionResource(id = R.dimen.room_screens_default_bottom_spacer)
+				)
+			)
 		}
 	}
 }
 
 
-class CreateRoomDialogPreviewParams : CollectionPreviewParameterProvider<CreateRoomState>(
+class CreateRoomStatePreviewParams : CollectionPreviewParameterProvider<CreateRoomState>(
 	listOf(
 		CreateRoomState(),
 		CreateRoomState(
@@ -180,11 +203,15 @@ class CreateRoomDialogPreviewParams : CollectionPreviewParameterProvider<CreateR
 	)
 )
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
+@Preview(
+	uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
+)
+@Preview(
+	uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL
+)
 @Composable
 fun CreateRoomScreenPreview(
-	@PreviewParameter(CreateRoomDialogPreviewParams::class)
+	@PreviewParameter(CreateRoomStatePreviewParams::class)
 	state: CreateRoomState
 ) {
 	AndroidTicTacToeTheme {

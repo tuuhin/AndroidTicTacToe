@@ -5,12 +5,15 @@ sealed class ApiPaths(val route: String) {
 	object CreateRoomPath : ApiPaths(route = "/room/create")
 	object JoinRoomPath : ApiPaths(route = "/room/join")
 
-	data class AnonymousGamePath(val clientId: String, val userName: String? = null) :
+	data class AnonymousGamePath(
+		val clientId: String,
+		val userName: String? = null
+	) :
 		ApiPaths(
 			route = buildString {
 				append("/ws/game?client_id=${clientId}")
 				userName?.let { name ->
-					append("&userName=$name")
+					append("&username=$name")
 				}
 			}
 		)
@@ -24,7 +27,7 @@ sealed class ApiPaths(val route: String) {
 
 			append("/ws/game/${roomId}?client_id=${clientId}")
 			userName?.let { name ->
-				append("&userName=$name")
+				append("&username=$name")
 			}
 		}
 	)
