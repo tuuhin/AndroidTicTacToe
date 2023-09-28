@@ -22,32 +22,24 @@ android {
 			useSupportLibrary = true
 		}
 
-		Properties().apply {
-			rootProject.file("backend.properties").inputStream()
-				.use { stream ->
-					load(stream)
-					buildConfigField(
-						type = "String",
-						name = "BASE_URI",
-						value = "\"${getProperty("BASE_URI", "")}\""
-					)
-					buildConfigField(
-						type = "Boolean",
-						name = "IS_CONNECTION_SECURE",
-						value = getProperty("IS_CONNECTION_SECURE", "false")
-					)
-				}
-
-		}
-
+		val properties = loadProperties("backend.properties")
+		buildConfigField(
+			type = "String",
+			name = "BASE_URI",
+			value = "\"${properties.getProperty("BASE_URI", "")}\""
+		)
+		buildConfigField(
+			type = "Boolean",
+			name = "IS_CONNECTION_SECURE",
+			value = properties.getProperty("IS_CONNECTION_SECURE", "false")
+		)
 	}
 
 	buildTypes {
 		release {
 			isMinifyEnabled = false
 			proguardFiles(
-				getDefaultProguardFile("proguard-android-optimize.txt"),
-				"proguard-rules.pro"
+				getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
 			)
 		}
 	}
@@ -109,4 +101,26 @@ dependencies {
 	implementation(libs.compose.toolingpreview)
 	debugImplementation(libs.compose.ui.tooling)
 	debugImplementation(libs.compose.test.manifest)
+}
+
+fun loadProperties(fileName: String): Properties {
+	val file = rootProject.file(fileName).also { file ->
+		if (!file.exists()) {
+			val content = """
+					#The base uri for the backend server
+					BASE_URI=<APP_BACKEND_SERVER_URL>
+					#Is the connection to the base uri is secure
+					IS_CONNECTION_SECURE=false
+				""".trimIndent()
+
+			file.printWriter(charset = Charsets.UTF_8).use { writer ->
+				writer.write(content)
+			}
+		}
+	}
+	return Properties().apply {
+		file.inputStream().use { stream ->
+			load(stream)
+		}
+	}
 }
