@@ -1,11 +1,11 @@
-# Tic Tac Toe
+# 🎲 Tic Tac Toe
 
 This Android project is a multiplayer Tic Tac Toe game that uses websockets for real-time gameplay.
 Users can anonymously play games or create dedicated rooms with unique codes to challenge friends.
 The rooms can host multiple boards, and the winner is determined based on the most number of wins
 across the boards.
 
-## About
+## 💁 About
 
 This Android app brings the classic Tic Tac Toe game to life with the added thrill of real-time
 multiplayer gameplay using websockets. It offers the following features:
@@ -15,12 +15,16 @@ multiplayer gameplay using websockets. It offers the following features:
 - **Multi-Board Rooms**: Host rooms with multiple boards for extended gameplay.
 - **Winning Streak**: The winner is decided based on the most wins across boards.
 
-### Backend
+### 🏗️ Backend
 
 Also check out the backend of the project made
 using `ktor` .[Backend](https://github.com/tuuhin/ktor-tick-tack-toe)
 
-### Getting Started
+### 📹 Game Clip
+
+This is the simple workflow of the game .[Check out this video](./video/game_clip.mp4)
+
+### 🚶 Getting Started
 
 Follow these steps to get started with the Tic Tac Toe app in your local machine.
 
@@ -32,7 +36,7 @@ Follow these steps to get started with the Tic Tac Toe app in your local machine
    the file.Provide the baseurl collected earlier of the backend.
 5. If the configuration is correctly done, you can run the app and play the game.
 
-### Conclusion
+### 😃 Conclusion
 
 The Tic Tac Toe with Websockets Android app provides an exciting and social gaming experience.
 Whether you want to challenge anonymous players or create dedicated rooms for friends, this app is
